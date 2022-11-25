@@ -1,0 +1,98 @@
+<?php
+//class Connect extends PDO {
+//    public function __construct() {
+//        parent::__construct("mysql:host=localhost;dbname=google_login", "root", "root", 
+//                array(PDO::MYSQL_ATTR_INIT_COMMAND=>"SET NAMES utf8"));
+//    }
+//}
+//
+//class Controller {
+//    // print data
+//    function printData($id) {
+//        $db = new Connect;
+//        $user = $db->prepare("SELECT * FROM users ORDER BY id");
+//        $user->execute();
+//        $content = '<table class="table">'
+//                . '<thead class="thead-light"><tr>'
+//                . '<th scope="col">First Name</th>'
+//                . '<th scope="col">Last Name</th>'
+//                . '<th scope="col">Avatar</th>'
+//                . '<th scope="col">Email</th>'
+//                . '</tr></thead>'
+//                . '<tbody>';
+//        //<img style="max-width: 50px;" src="'.$userInfo["avatar"].'" alt="avatar">
+//        while($userInfo = $user->fetch(PDO::FETCH_ASSOC)) {
+//            $content .= '<tr>'
+//                    . '<td>'.$userInfo["fname"].'</td>'
+//                    . '<td>'.$userInfo["lname"].'</td>'
+//                    . '<td><img style="max-width: 50px;" src="' .$userInfo["avatar"]. '" alt="avatar"></td>'
+//                    . '<td>'.$userInfo["email"].'</td>'
+//                    . '</tr>';
+//        }
+//        $content .= '</tbody></table>';
+//        return $content;
+//    }
+//    
+//    //check if user is logged in
+//    function checkUserStatus($id, $sess) {
+//        $db = new Connect;
+//        $user = $db->prepare("SELECT id FROM users WHERE id=:id AND session=:session");
+//        $user->execute([
+//            ':id' => intval($id),
+//            ':session' => $sess
+//        ]);
+//        $userInfo = $user->fetch(PDO::FETCH_ASSOC);
+//        if(!$userInfo["id"]) {
+//            return FALSE;
+//        } else {
+//            return TRUE;
+//        }
+//    }
+//    
+//    function generateCode($length) {
+//        $chars = "vWyzABC0123456";
+//        $code = "";
+//        $clean = strlen($chars) - 1;
+//        while(strlen($code) < $length) {
+//            $code .= $chars[mt_rand(0, $clean)];
+//        }
+//        return $code;
+//    }
+//    
+//    function insertData($data) {
+//        $db = new Connect;
+//        $checkUser = $db->prepare("SELECT * FROM users WHERE email=:email");
+//        $checkUser->execute(['email'=>$data['email']]);
+//        $info = $checkUser->fetch(PDO::FETCH_ASSOC);
+//        
+//        if(!$info["id"]) {
+//            $session = $this->generateCode(10);
+//            $insertUser = $db->prepare("INSERT INTO users (fname, lname, picture, email, password, session) VALUES (:fname, :lname, :avatar, :email, :password, :session)");
+//            $insertUser->execute([
+//                ':fname' => $data["givenName"],
+//                ':lname' => $data["familyName"],
+//                ':avatar' => $data["avatar"],
+//                ':email' => $data["email"],
+//                ':password' => $this->generateCode(5),
+//                ':session' => $session
+//            ]);
+//            
+//            if($insertUser) {
+//                setcookie("id", $db->lastInsertId(), time()+60*60*24*30, "/", NULL);
+//                setcookie("sess", $session, time()+60*60*24*30, "/", NULL);
+//                $_SESSION['id'] = $db->lastInsertId();
+//                header("Location: index.php");
+//                exit();
+//            } else {
+//                return "Error inserting user!";
+//            }
+//        } else {
+//            setcookie("id", $info['id'], time()+60*60*24*30, "/", NULL);
+//            setcookie("sess", $info['session'], time()+60*60*24*30, "/", NULL);
+//            $_SESSION['id'] = $info['id'];
+//            header("Location: index.php");
+//            exit();
+//        }
+//    }
+//}
+?>
