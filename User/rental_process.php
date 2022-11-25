@@ -118,7 +118,7 @@
     </div>
   </div>
 </div>
-//TODO: Payment Haven't DO!!!!!!!!!!
+
 <div class="modal fade" id="payment" data-bs-backdrop="static" aria-hidden="true" aria-labelledby="paymentlabel" tabindex="-1">
   <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">

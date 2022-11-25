@@ -82,16 +82,7 @@ $pending_rental = $conn->query("SELECT * FROM pending_rent WHERE email = '$email
 <?php include './Partials/footer.php'; ?>
 <?php include './Partials/chatbot.php'; ?>
 
-<script>
-    var ic = "010119-08-1311";
-    var lastChar = ic.slice(-1);
-    // alert(lastChar);
-    if(Number(lastChar)%2 == 0) {
-        alert("Female");
-    } else {
-        alert("Male");
-    }
-  
+<script>  
     $(document).ready(function () {
         $('.btnProceed').click(function () {
             email = "<?php echo $userInfo['email'];?>";
