@@ -130,6 +130,7 @@
         
         <div class="row">
           <div class="col-md-6">
+            <div id="pay_info"></div>
             <div class="form-group row">
               <h6 class="col-3 col-form-label">Payment Method ID:</h6>
               <div class="col">
@@ -172,19 +173,32 @@
                 </div>
               </div>
             </div>
-            <div class="row">
+            <div class="row g-2 p-0 m-0">
               <div class="col">
                 <div class="form-group row">
                     <h6 class="col col-form-label">CVV: </h6>
                     <div class="col-sm">
-                        <input type="text" class="form-control" id="cvv" name="cvv">
+                        <input type="password" class="form-control" id="cvv" name="cvv" maxlength="3">
                     </div>
                 </div>
+              </div>
+
+              <div class="col">
+                <div class="form-group row">
+                    <h6 class="col col-form-label">TAC: </h6>
+                    <div class="col-sm">
+                        <input type="password" class="form-control" id="tac" name="tac" maxlength="6">
+                    </div>
+                </div>
+              </div>
+              
+              <div class="col">
+                <button class="btn btn-secondary" id="requestTAC">Request TAC</button>
               </div>
             </div>
             <div class="row">
               <div class="d-grid gap-2">
-                <button type="button" class="btn btn-success mb-1 p-2" style="font-size: 18px;">Confirm and place order</button>
+                <button type="button" id="makePay" class="btn btn-success mb-1 p-2" style="font-size: 18px;">Confirm and place order</button>
               </div>
             </div>
           </div>
@@ -363,12 +377,75 @@
     location.reload();
   }
 
+  var email = $('#email').val();
   var fullname = $('#fullname').val();
   var phoneNo = $('#phoneNo').val();
   var stateCity = $('#stateCity').val();
   var postalCode = $('#postalCode').val();
   var detailAdd = $('#detailAdd').val();
+  
+  //REQUEST TAC
+  $(document).ready(function() {
+    $('#requestTAC').click(function() {
+      var methodId = $('#methodId').val();
+      var cardholderName = $('#cardholderName').val();
+      var cardNo = $('#cardNo').val();
+      var expMth = $('#expMth').val();
+      var expYear = $('#expYear').val();
+      var cvv = $('#cvv').val();
 
+      $.ajax({
+        type: "POST",
+        url: "../process/user.php",
+        data: "requestTAC" + "&email=" + email + "&methodId=" + methodId + "&cardholderName=" + cardholderName + "&cardNo=" + cardNo + "&expMth=" + expMth + "&expYear=" + expYear + "&cvv=" + cvv,
+        success: function(html) {
+          // alert(html);
+          if(html == "true") {
+            $("#pay_info").html('<div class="alert alert-success"><strong>Success!</strong> Please check your email.</div>');
+          } else if(html == "short") {
+            $("#pay_info").html('<div class="alert alert-danger"><strong>Error!</strong> Please fill in all the fields.</div>');
+          } else if(html == "false") {
+            $("#pay_info").html('<div class="alert alert-danger"><strong>Error!</strong> Please request for a new TAC.</div>');
+          } else {
+            $("#pay_info").html('<div class="alert alert-danger"><strong>Error</strong> processing request. Please try again.</div>');
+            alert(html);
+          }
+        }
+      })
+    });
+  });
+
+  //VERIFY THE TAC
+  $(document).ready(function() {
+    $('#makePay').click(function() {
+      var email = $('#email').val();
+      var tac = $('#tac').val();
+      var totalPay = $('#totalPay').val();
+      var rentId = $('#rentId').val();
+      var addId = $('#addId').val();
+
+      $.ajax({
+        type: "POST",
+        url: "../process/user.php",
+        data: "verifyTAC" + "&email=" + email + "&tac=" + tac + "&totalPay=" + totalPay + "&rentId=" + rentId + "&addId=" + addId,
+        success: function(html) {
+          if(html == "match") {
+            $("#pay_info").html('<div class="alert alert-success"><strong>Success!</strong> Match.</div>');
+            redirect("Payment Successfully");
+          } else if(html == "nMatch") {
+            $("#pay_info").html('<div class="alert alert-danger"><strong>Error!</strong> TAC Not Match.</div>');
+          } else if(html == "error") {
+            $("#pay_info").html('<div class="alert alert-danger"><strong>Error!</strong> Please request for a new TAC.</div>');
+          } else {
+            $("#pay_info").html('<div class="alert alert-danger"><strong>Error</strong> processing request. Please try again.</div>');
+            alert(html);
+          }
+        }
+      })
+    });
+  });
+
+  //MAKE PAYMENT THROUGH PAYPAL
   paypal.Buttons({
     onClick: function()  {
       if($('#addId').val() == "none") {
@@ -395,18 +472,24 @@
     // Finalize the transaction after payer approval
     onApprove: (data, actions) => {
       return actions.order.capture().then(function(orderData) {
-        // Successful capture! For dev/demo purposes:
-        // console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
         const transaction = orderData.purchase_units[0].payments.captures[0];
         // alert(`Transaction ${transaction.status}: ${transaction.id}\n\nSee console for all available details`);
+
+        var email = $('#email').val();
+        var totalPay = $('#totalPay').val();
+        var rentId = $('#rentId').val();
+        var addId = $('#addId').val();
 
         $.ajax({
           type: "POST",
           url: "../process/user.php",
-          data: "makePayment",
+          data: "makePayment" + "&email=" + email + "&payment_mode=Paid by Paypal" + "&payment_id=" + transaction.id + "&addId=" + addId + "&totalPay=" + totalPay + "&rentId=" + rentId,
           success: function(html) {
             if(html == "success") {
               redirect("Rental Placed Successfully");
+            } else {
+              $("#pay_info").html('<div class="alert alert-danger"><strong>Error</strong> processing request. Please try again.</div>');
+              alert(html);
             }
           }
         });

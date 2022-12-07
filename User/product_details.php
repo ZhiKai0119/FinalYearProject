@@ -59,7 +59,7 @@ if(isset($_GET['prodId'])) {
                         <p><?php echo $data['description']; ?></p>
                     </div>
                 </div>
-        </div>
+            </div>
         </div>
 
         
@@ -111,6 +111,7 @@ if(isset($_GET['prodId'])) {
             } else {
                 $('#deposit').val(calDeposit);
             }
+            changeRange();
         });
     });
 </script>

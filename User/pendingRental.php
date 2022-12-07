@@ -35,7 +35,7 @@ $pending_rental = $conn->query("SELECT * FROM pending_rent WHERE email = '$email
                                 <th scope="col">Rental ID</th>
                                 <th scope="col">Product ID</th>
                                 <th scope="col">Start Date</th>
-                                <th scope="col">End Date</th>
+                                <th scope="col">Rent Days</th>
                                 <th scope="col">Rental Fees</th>
                                 <th scope="col" colspan="2">Action</th>
                             </tr>
@@ -56,7 +56,7 @@ $pending_rental = $conn->query("SELECT * FROM pending_rent WHERE email = '$email
                                             <img src="../Owner/Images/<?php echo $prodInfo['image']; ?>" alt="" class="img-fluid" onclick="location.href='product_details.php?prodId=<?php echo $prodInfo['prodId']; ?>';" style="width: 100px; height: 100px;">
                                         </td>
                                         <td><?php echo $item['startDate']; ?></td>
-                                        <td><?php echo $item['endDate']; ?></td>
+                                        <td><?php echo $item['rentDay']; ?></td>
                                         <td>RM <?php echo number_format((float)$item['totalFees'],2); ?></td>
                                         <td class="col-sm-1">
                                             <button type="button" class="btn btn-primary btnProceed" value="<?php echo $item['rentId'];?>">Proceed</button>

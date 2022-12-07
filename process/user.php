@@ -1,5 +1,6 @@
 <?php
 include '../config/constant.php';
+require '../phpmailer/PHPMailerAutoload.php';
 
 function redirect($url, $message) {
     setcookie("status", $message, time()+1, "/", NULL);
@@ -82,9 +83,9 @@ if(isset($_FILES["image"]["name"])) {
         $updateImage = $conn->query("UPDATE users SET picture = '$update_filename' WHERE email = '$email'");
         if($updateImage) {
             move_uploaded_file($tmpName, $path.'/'.$update_filename);
-            if(file_exists("../Images/".$old_image)) {
-                unlink("../Images/".$old_image);
-            }
+            // if(file_exists("../Images/".$old_image)) {
+            //     unlink("../Images/".$old_image);
+            // }
         }
         echo "<script>document.location.href = '../User/userProfile.php';</script>";
     }
@@ -166,7 +167,7 @@ if(isset($_FILES["image"]["name"])) {
             }
         }
     }
-} elseif (isset($_POST['email']) && isset($_POST['cardholderName']) && isset($_POST['cardNo'])) {
+} elseif (isset($_POST['addCard'])) { //isset($_POST['email']) && isset($_POST['cardholderName']) && isset($_POST['cardNo'])
     $query = "SELECT * FROM paymentmethod ORDER BY methodId desc limit 1";
     $result = mysqli_query($conn, $query);
     $row = mysqli_fetch_array($result);
@@ -221,7 +222,7 @@ if(isset($_FILES["image"]["name"])) {
     } else {
         errorRedirect("../User/userProfile.php", "Something Went Wrong");
     }
-} elseif (isset($_POST['addAddress'])) {
+} elseif (isset($_POST['addUserAddress'])) {  //ADD ADDRESS
     $query = "SELECT * FROM address ORDER BY addId desc LIMIT 1";
     $result = mysqli_query($conn, $query);
     $row = mysqli_fetch_array($result);
@@ -243,29 +244,46 @@ if(isset($_FILES["image"]["name"])) {
     $labelAs = $_POST['labelAs'];
     if($_POST['defaultAdd'] == "yes"){
         $defaultAdd = '1';
+        $update_default = $conn->query("SELECT * FROM address WHERE email = '$email'");
+        while($result = $update_default->fetch_assoc()) {
+            $address_id = $result['addId'];
+            $conn->query("UPDATE address SET defaultAdd = '0' WHERE addId = '$address_id'");
+        }
     } else {
         $defaultAdd = '0';
     }
     if($_POST['pickupAdd'] == "yes"){
         $pickupAdd = '1';
+        $update_pickup = $conn->query("SELECT * FROM address WHERE email = '$email'");
+        while($result = $update_pickup->fetch_assoc()) {
+            $address_id = $result['addId'];
+            $conn->query("UPDATE address SET pickupAdd = '0' WHERE addId = '$address_id'");
+        }
     } else {
         $pickupAdd = '0';
     }
     if($_POST['returnAdd'] == "yes"){
         $returnAdd = '1';
+        $update_return = $conn->query("SELECT * FROM address WHERE email = '$email'");
+        while($result = $update_return->fetch_assoc()) {
+            $address_id = $result['addId'];
+            $conn->query("UPDATE address SET returnAdd = '0' WHERE addId = '$address_id'");
+        }
     } else {
         $returnAdd = '0';
     }
 
-    $address_query = $conn->query("INSERT INTO address (addId, fullName, phoneNo, stateCity, postalCode, detailAdd, labelAs, defaultAdd, pickupAdd, returnAdd, email) 
-    VALUES ('$addId', '$fullname', '$phoneNo', '$stateCity', '$postalCode', '$detailAdd', '$labelAs', '$defaultAdd', '$pickupAdd', '$returnAdd', '$email')");
-
-    if($address_query) {
-        echo "true";
+    if($fullname = "" || $phoneNo = "" || $stateCity = "" || $postalCode == "" || $detailAdd == "") {
+        echo "missing";
     } else {
-        echo "false";
+        $address_query = $conn->query("INSERT INTO address (addId, fullName, phoneNo, stateCity, postalCode, detailAdd, labelAs, defaultAdd, pickupAdd, returnAdd, email, available) VALUES ('$addId', '$fullname', '$phoneNo', '$stateCity', '$postalCode', '$detailAdd', '$labelAs', '$defaultAdd', '$pickupAdd', '$returnAdd', '$email', '1')");
+        if($address_query) {
+            echo "true";
+        } else {
+            echo "false";
+        }
     }
-} elseif (isset($_POST['id'])) {
+} elseif (isset($_POST['id'])) {    //GET ADDRESS INFO
     $addressId = $_POST['id'];
 
     $address = $conn->query("SELECT * FROM address WHERE addId = '$addressId' LIMIT 1");
@@ -290,7 +308,20 @@ if(isset($_FILES["image"]["name"])) {
     }
 
     
-} elseif (isset($_POST['updateAddress'])) {
+} elseif (isset($_POST['updateAddress'])) {     //EDIT ADDRESS
+    $query = "SELECT * FROM address ORDER BY addId desc LIMIT 1";
+    $result = mysqli_query($conn, $query);
+    $row = mysqli_fetch_array($result);
+    $lastId = $row['addId'];
+    if($lastId == "") {
+        $addId = "ADD1001";
+    } else {
+        $newAddId = substr($lastId, 3);
+        $newAddId = intval($newAddId);
+        $newAddId = "ADD".($newAddId + 1);
+    }
+
+    $email = $_POST['email'];
     $addId = $_POST['addId'];
     $fullName = $_POST['fullName'];
     $phoneNo = $_POST['phoneNo'];
@@ -300,32 +331,49 @@ if(isset($_FILES["image"]["name"])) {
     $labelAs = $_POST['labelAs'];
     if($_POST['defaultAdd'] == "yes"){
         $defaultAdd = '1';
+        $update_default = $conn->query("SELECT * FROM address WHERE email = '$email'");
+        while($result = $update_default->fetch_assoc()) {
+            $address_id = $result['addId'];
+            $conn->query("UPDATE address SET defaultAdd = '0' WHERE addId = '$address_id'");
+        }
     } else {
         $defaultAdd = '0';
     }
     if($_POST['pickupAdd'] == "yes"){
         $pickupAdd = '1';
+        $update_pickup = $conn->query("SELECT * FROM address WHERE email = '$email'");
+        while($result = $update_pickup->fetch_assoc()) {
+            $address_id = $result['addId'];
+            $conn->query("UPDATE address SET pickupAdd = '0' WHERE addId = '$address_id'");
+        }
     } else {
         $pickupAdd = '0';
     }
     if($_POST['returnAdd'] == "yes"){
         $returnAdd = '1';
+        $update_return = $conn->query("SELECT * FROM address WHERE email = '$email'");
+        while($result = $update_return->fetch_assoc()) {
+            $address_id = $result['addId'];
+            $conn->query("UPDATE address SET returnAdd = '0' WHERE addId = '$address_id'");
+        }
     } else {
         $returnAdd = '0';
     }
 
-    $update_address = $conn->query("UPDATE address SET fullName = '$fullName', phoneNo = '$phoneNo', stateCity = '$stateCity', postalCode = '$postalCode', detailAdd = '$detailAdd',
-    labelAs = '$labelAs', defaultAdd = '$defaultAdd', pickupAdd = '$pickupAdd', returnAdd = '$returnAdd' WHERE addId = '$addId'");
+    $address_query = $conn->query("INSERT INTO address (addId, fullName, phoneNo, stateCity, postalCode, detailAdd, labelAs, defaultAdd, pickupAdd, returnAdd, email, available) 
+    VALUES ('$newAddId', '$fullName', '$phoneNo', '$stateCity', '$postalCode', '$detailAdd', '$labelAs', '$defaultAdd', '$pickupAdd', '$returnAdd', '$email', '1')");
 
-    if($update_address) {
+    $update_address = $conn->query("UPDATE address SET available = '0' WHERE addId = '$addId'");
+
+    if($address_query && $update_address) {
         echo "true";
     } else {
         echo "false";
     }
-} elseif (isset($_POST['delete_address'])) {
+} elseif (isset($_POST['delete_address'])) {    //DELETE ADDRESS
     $addId = mysqli_real_escape_string($conn, $_POST['eId']);
 
-    $delete_address = $conn->query("DELETE FROM address WHERE addId = '$addId'");
+    $delete_address = $conn->query("UPDATE address SET available = '0' WHERE addId = '$addId'");
     if($delete_address) {
         redirect("../User/userProfile.php", "Address Delete Successfully");
     } else {
@@ -384,21 +432,27 @@ if(isset($_FILES["image"]["name"])) {
     $prodId = $_POST['prodId'];
     $startDate = $_POST['startDate'];
     $endDate = $_POST['endDate'];
+    $rentPeriod = $_POST['rentPeriod'];
+    $range = $_POST['range'];
     $rentDay = $_POST['rentDay'];
     $rentFees = $_POST['rentFees'];
     $deposit = $_POST['deposit'];
     $totalFees = $_POST['totalFees'];
 
-    $check_pending = $conn->query("SELECT * FROM pending_rent WHERE email = '$email' AND prodId = '$prodId' AND confirmRent = 0 AND status = 'Pending' LIMIT 1");
-    if(mysqli_num_rows($check_pending) > 0) {
-        echo "pending";
+    if($startDate == null) {
+        echo "missing";
     } else {
-        $pending_rent = $conn->query("INSERT INTO pending_rent (rentId, email, prodId, startDate, endDate, rentDay, rentFees, deposit, totalFees, confirmRent, status) 
-        VALUES ('$rentId', '$email', '$prodId', '$startDate', '$endDate', '$rentDay', '$rentFees', '$deposit', '$totalFees', 0, 'Pending')");
-        if($pending_rent) {
-            echo "true";
+        $check_pending = $conn->query("SELECT * FROM pending_rent WHERE email = '$email' AND prodId = '$prodId' AND confirmRent = 0 AND status = 'Pending' LIMIT 1");
+        if(mysqli_num_rows($check_pending) > 0) {
+            echo "pending";
         } else {
-            echo "false";
+            $pending_rent = $conn->query("INSERT INTO pending_rent (rentId, email, prodId, startDate, endDate, rentPeriod, dateRange, rentDay, rentFees, deposit, totalFees, confirmRent, status) 
+            VALUES ('$rentId', '$email', '$prodId', '$startDate', '$endDate', '$rentPeriod', '$range', '$rentDay', '$rentFees', '$deposit', '$totalFees', 0, 'Pending')");
+            if($pending_rent) {
+                echo "true";
+            } else {
+                echo "false";
+            }
         }
     }
 } elseif (isset($_POST['getProductInfo'])) {
@@ -528,6 +582,87 @@ if(isset($_FILES["image"]["name"])) {
     ];
     echo json_encode($methodInfo);
 } elseif (isset($_POST['makePayment'])) {
+    $email = $_POST['email'];
+    $totalPay = $_POST['totalPay'];
+    $rentId = $_POST['rentId'];
+    $addId = $_POST['addId'];
+    $payment_mode = $_POST['payment_mode'];
+    $payment_id = $_POST['payment_id'];
+
+    $tracking_no = uniqid('TRACK');
+    $payment = $conn->query("INSERT INTO payments (payment_id, payer_email, amount, currency, payment_mode, payment_status) VALUES ('$payment_id', '$email', '$totalPay', 'MYR', '$payment_mode', 'Successful')");
+    $rental_detail = $conn->query("INSERT INTO rental_details (rental_id, payment_id, email, address_id, tracking_no, rental_status) VALUES ('$rentId', '$payment_id', '$email', '$addId', '$tracking_no', 'Pending Delivery')");
+    $pending_rent = $conn->query("UPDATE pending_rent SET confirmRent = '1', status = 'Done' WHERE rentId = '$rentId'");
     echo "success";
+} elseif (isset($_POST['requestTAC'])) {
+    $email = $_POST['email'];
+    $methodId = $_POST['methodId'];
+    $cardholderName = $_POST['cardholderName'];
+    $cardNo = $_POST['cardNo'];
+    $expMth = $_POST['expMth'];
+    $expYear = $_POST['expYear'];
+    $cvv = $_POST['cvv'];
+
+    if($cardholderName == "" || $cardNo == "" || $expMth == "" || $expYear == "" || $cvv == "") {
+        echo "short";
+    } else {
+        $tacNum = rand(100000, 999999);
+        setcookie("tac", $tacNum, time()+60*2, "/", NULL);
+        
+        $message = "$tacNum";
+        $headers = "From: fyp.rnsservice@gmail.com<br>";
+        // $headers .= "MIME-Version: 1.0<br>";
+        // $headers .= "Content-type:text/html;charset=UTF-8<br>";
+
+        $mail = new PHPMailer();
+
+        $mail->isSMTP();
+        $mail->Host="smtp.gmail.com";
+        $mail->SMTPAuth = true;
+        $mail->Username = "fyp.rnsservice@gmail.com";
+        $mail->Password = 'gvwkiyvkdtlevhdc';    
+        $mail->Port = 587;
+        $mail->SMTPSecure = "tls";
+
+        $mail->isHTML(true);
+        $mail->setFrom($email);
+        $mail->addAddress($email);
+        $mail->Subject = "R&S - Verify Email";
+        $mail->Body = "$headers<br><br>"
+                    . "<br>TAC Number: "
+                    . "$message <br><br>"
+                    . "-- <br> This e-mail was sent from a registered company, R&S Service (http://localhost/FinalYearProject/User/contactUs.php)";
+
+        if($mail->send()){
+            $status = "success";
+            $response = "Email is sent";
+            echo 'true';
+        }else{
+            $status = "failed";
+            $response = "Something is wrong <br>".$mail->ErrorInfo;
+            echo 'false';
+        }
+    }    
+} elseif (isset($_POST['verifyTAC'])) {
+    $email = $_POST['email'];
+    $tac = $_POST['tac'];
+    $totalPay = $_POST['totalPay'];
+    $rentId = $_POST['rentId'];
+    $addId = $_POST['addId'];
+
+    if(isset($_COOKIE['tac'])) {
+        if($tac == $_COOKIE['tac']) {
+            $payment_id = md5(time() . mt_rand(1, 1000000));
+            $tracking_no = uniqid('TRACK');
+            $payment = $conn->query("INSERT INTO payments (payment_id, payer_email, amount, currency, payment_mode, payment_status) VALUES ('$payment_id', '$email', '$totalPay', 'MYR', 'Card', 'Successful')");
+            $rental_detail = $conn->query("INSERT INTO rental_details (rental_id, payment_id, email, address_id, tracking_no, rental_status) VALUES ('$rentId', '$payment_id', '$email', '$addId', '$tracking_no', 'Pending Delivery')");
+            $pending_rent = $conn->query("UPDATE pending_rent SET confirmRent = '1' AND status = 'Done' WHERE rentId = '$rentId'");
+            echo "match";
+        } else {
+            echo "nMatch";
+        }
+    } else {
+        echo "error";
+    }
 }
 ?>

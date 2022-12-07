@@ -1,4 +1,5 @@
 <?php 
+
 if (isset($_COOKIE["id"]) && isset($_COOKIE["token"])) {
     $sql = "SELECT * FROM users WHERE token='{$_COOKIE["token"]}'";
     $result = mysqli_query($conn, $sql);
@@ -6,8 +7,8 @@ if (isset($_COOKIE["id"]) && isset($_COOKIE["token"])) {
     $email = $userInfo['email'];
     $fullName = $userInfo['fullName'];
     //$picture = '<i class="fa fa-user"></i>';
-    //$picture = '<img class="rounded-circle" src="'. $userInfo['picture'] .'" alt="" width="25px" height="25px" style="margin-bottom: 3px;">';
-    $picture = '<img class="rounded-circle" src="../Images/whiteProfile.png" alt="" width="25px" height="25px" style="margin-bottom: 3px;">';
+    $picture = '<img class="rounded-circle" src="../Images/'. $userInfo['picture'] .'" alt="" width="25px" height="25px" style="margin-bottom: 3px;">';
+    // $picture = '<img class="rounded-circle" src="../Images/whiteProfile.png" alt="" width="25px" height="25px" style="margin-bottom: 3px;">';
     $role = $userInfo['role'];
 } else {
     header("Location: ../index.php");
@@ -27,14 +28,14 @@ function getProfilePicture($name) {
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Sharp" rel="stylesheet">
 <div class="sidebar close">
     <div class="logo-details">
-        <a href="main.php" style="text-decoration: none; color: white;"><i class='bx bxl-c-plus-plus' onclick="main.php"></i></a>
-        <span class="logo_name"><a href="main.php" style="text-decoration: none; color: white;">R&S Service</a></span>
+        <a href="main.php?dashboard" style="text-decoration: none; color: white;"><img src="../Images/RNS_white.png" width="30px" height="30px" class="ml-4" onclick="main.php?dashboard"></a>
+        <span class="logo_name"><a href="main.php?dashboard" style="text-decoration: none; color: white;">R&S Service</a></span>
     </div>
     <ul class="nav-links">
         <li>
-            <a href="main.php"><i class='bx bx-grid-alt' ></i><span class="link_name">Dashboard</span></a>
+            <a href="main.php?dashboard"><i class='bx bx-grid-alt' ></i><span class="link_name">Dashboard</span></a>
             <ul class="sub-menu">
-                <li><a class="link_name" href="main.php">Dashboard</a></li>
+                <li><a class="link_name" href="main.php?dashboard">Dashboard</a></li>
             </ul>
         </li>
         <li>
@@ -59,6 +60,16 @@ function getProfilePicture($name) {
         </li>
         <li>
             <div class="iocn-link">
+                <a href="main.php?view-rental"><i class='bx bxs-layer-plus'></i><span class="link_name">Rental</span></a>
+                <i class='bx bxs-chevron-down arrow' ></i>
+            </div>
+            <ul class="sub-menu">
+                <li><a class="link_name" href="main.php?view-rental">Rental</a></li>
+                <!-- <li><a href="main.php?add-product">Add Product</a></li> -->
+            </ul>
+        </li>
+        <li>
+            <div class="iocn-link">
                 <a href="#"><i class='bx bxs-user-account'></i><span class="link_name" style="font-size: 16px;">User Accounts</span></a>
                 <i class='bx bxs-chevron-down arrow' ></i>
             </div>
@@ -76,14 +87,15 @@ function getProfilePicture($name) {
         
         <li>
             <div class="profile-details">
-                <div class="profile-content">
-                    <?php echo $picture; ?>
-<!--                    <img src="image/profile.jpg" alt="profileImg">-->
-                </div>
-                <div class="name-job">
-                    <div class="profile_name"><?php echo $fullName; ?></div>
-                    <div class="job"><?php echo $role; ?></div>
-                </div>
+                <a href="../User/userProfile.php">
+                    <div class="profile-content">
+                        <?php echo $picture; ?>
+                    </div>
+                    <div class="name-job">
+                        <div class="profile_name"><?php echo $fullName; ?></div>
+                        <div class="job"><?php echo $role; ?></div>
+                    </div>
+                </a>
                 <a href="../logout.php"><i class='bx bx-log-out'></i></a>
                 <ul class="sub-menu blank">
                     <li><a class="link_name" href="../User/main.php">Customer</a></li>

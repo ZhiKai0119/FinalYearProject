@@ -10,6 +10,8 @@ require_once './config.php';
         <link rel="stylesheet" href="CSS/login.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/bootstrap.min.css"/>
 
         <script type="text/javascript">
             $(document).ready(function () {
@@ -36,7 +38,7 @@ require_once './config.php';
                                 $("#add_info").html('<div class="alert alert-danger"><strong>Email Address</strong> format is not valid.</div>');
                             } else if (html === 'pError') {
                                 $("#add_info").html('<div class="alert alert-danger"><strong>Invalid </strong> Password.</div>');
-                            } else if (html === 'renter') {
+                            } else if (html === 'user') {
                                 $("#add_info").html('<div class="alert alert-success"><strong>Logged In.</strong>.</div>');
                                 window.open('User/main.php','_self');
                             } else if (html === 'owner') { 
@@ -78,8 +80,8 @@ require_once './config.php';
                     }
                     
                     if($userInfo["role"] == 'Owner') {
-                        header("Location:Owner/main.php");
-                    } else if($userInfo["role"] == 'Renter') {
+                        header("Location:Owner/main.php?dashboard");
+                    } else if($userInfo["role"] == 'User') {
                         header("Location:User/main.php");
                     } else {
                         header("Location:User/main.php");
@@ -102,7 +104,7 @@ require_once './config.php';
 
                 <div class="text-center">
                     <button type="submit" class="btn btn-primary col-sm-4" id="loginF">Login</button>
-                    <button type="button" class="btn btn-success col-sm-4 ml-1" onclick="location.href='https://google.com'">Register</button>
+                    <button type="button" class="btn btn-success col-sm-4 ml-1" onclick="location.href='registration.php'">Register</button>
                     <hr class="hr-text" data-content="OR">
                     <button onclick="window.location = '<?php echo $login_url; ?>'" type="button" class="btn btn-danger col-sm-8">Login with Google</button>
                     <br>
@@ -113,5 +115,15 @@ require_once './config.php';
         <?php
             }
         ?>
+
+        <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+        <script>
+            alertify.set('notifier','position', 'top-right');
+            <?php if(isset($_COOKIE['status'])) { ?>
+                alertify.success('<?php echo $_COOKIE['status']; ?>'); 
+            <?php } elseif(isset($_COOKIE['failureStatus'])) { ?>
+                alertify.error('<?php echo $_COOKIE['failureStatus']; ?>'); 
+            <?php } ?>
+        </script>
     </body>
 </html>

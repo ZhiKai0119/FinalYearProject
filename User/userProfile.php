@@ -15,28 +15,8 @@
         </div>
         <?php include './Partials/nav.php';?>
 
-<!--        <div class="container h-100">
-            <img src="<?php //echo $userInfo['picture']; ?>" class="rounded-circle" alt="" width="150px" height="150px" style="margin: 5px;">
-            <p>Full Name: <?php //echo $userInfo['fullName']; ?></p>
-            <p>First Name: <?php //echo $userInfo['fname']; ?></p>
-            <p>Last Name: <?php //echo $userInfo['lname']; ?></p>
-            <p>Email: <?php //echo $userInfo['email']; ?></p>
-        </div>-->
-        
         <?php include '../userSetting.php'?>
-            
         <?php include './Partials/footer.php'; ?>
         <?php //include './Partials/chatbot.php'; ?>
-
-        <!--Alertify Js-->
-        <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
-        <script>
-            alertify.set('notifier','position', 'top-right');
-            <?php if(isset($_COOKIE['status'])) { ?>
-                alertify.success('<?php echo $_COOKIE['status']; ?>'); 
-            <?php } elseif(isset($_COOKIE['failureStatus'])) { ?>
-                alertify.error('<?php echo $_COOKIE['failureStatus']; ?>'); 
-            <?php } ?>
-        </script>
     </body>
 </html>

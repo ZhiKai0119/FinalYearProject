@@ -143,6 +143,7 @@ if(isset($_GET['catId'])) {
                     } else {
                         $('#deposit').val(calDeposit);
                     }
+                    changeRange();
                 }
             });
             return false;                    

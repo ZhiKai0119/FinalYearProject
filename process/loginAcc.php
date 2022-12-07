@@ -15,11 +15,11 @@ if(mysqli_num_rows($result) == 1) {
                 setcookie("token", $row['token'], time()+60*60*24*30, "/", NULL);
                 $_SESSION['user_token'] = $row['token'];
                 echo 'owner';   
-            } else if($row['role'] == 'Renter') {
+            } else if($row['role'] == 'User') {
                 setcookie("id", $row['id'], time()+60*60*24*30, "/", NULL);
                 setcookie("token", $row['token'], time()+60*60*24*30, "/", NULL);
                 $_SESSION['user_token'] = $row['token'];
-                echo 'renter';
+                echo 'user';
             } else {
                 echo 'false';
             }    

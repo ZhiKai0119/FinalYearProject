@@ -357,7 +357,7 @@
                                             <label class="d-block">Address</label>
                                             <?php 
                                             $email = $userInfo['email'];
-                                            $addresses = $conn->query("SELECT * FROM address WHERE email = '$email'"); ?>
+                                            $addresses = $conn->query("SELECT * FROM address WHERE email = '$email' AND available = 1"); ?>
                                             
                                             <?php if(mysqli_num_rows($addresses) > 0) { ?>
                                                 <ul class="list-group" id="add">
@@ -670,7 +670,7 @@
             $.ajax({
                 type: "POST",
                 url: "../process/user.php",
-                data: "email=" + email + "&cardholderName=" + cardholderName + "&cardNo=" + cardNo + "&expMth=" + expMth + "&expYear=" + expYear + "&cvv=" + cvv,
+                data: "addCard" + "&email=" + email + "&cardholderName=" + cardholderName + "&cardNo=" + cardNo + "&expMth=" + expMth + "&expYear=" + expYear + "&cvv=" + cvv,
                 success: function (html) {
                     if(html === 'true') {
                         $("#payment_info").html('<div class="alert alert-success"><strong>Success</strong> New Payment Method has been added.</div>');
@@ -717,17 +717,19 @@
             $.ajax({
                 type: "POST",
                 url: "../process/user.php",
-                data: "addAddress" + "&email=" + email + "&fullname=" + fullname + "&phoneNo=" + phoneNo + "&stateCity=" + stateCity + "&postalCode=" + postalCode + "&detailAdd=" + detailAdd + "&labelAs=" + labelAs + 
+                data: "addUserAddress" + "&email=" + email + "&fullname=" + fullname + "&phoneNo=" + phoneNo + "&stateCity=" + stateCity + "&postalCode=" + postalCode + "&detailAdd=" + detailAdd + "&labelAs=" + labelAs + 
                 "&defaultAdd=" + defaultAdd + "&pickupAdd=" + pickupAdd + "&returnAdd=" + returnAdd,
                 success: function (html) {
-                    // if(html === 'true') {
-                    //     redirect("New Address Added Successfully");
-                    // } else if(html === 'false') {
-                    //     $("#address_info").html('<div class="alert alert-danger"><strong>Error!</strong> New Address added unsuccessful.</div>');
-                    // } else {
-                    //     $("#address_info").html('<div class="alert alert-danger"><strong>Error</strong> processing request. Please try again.</div>');
-                    //     alert(html);
-                    // }
+                    if(html === 'true') {
+                        redirect("New Address Added Successfully");
+                    } else if(html === 'false') {
+                        $("#address_info").html('<div class="alert alert-danger"><strong>Error!</strong> New Address added unsuccessful.</div>');
+                    } else if(html === 'missing') {
+                        $("#address_info").html('<div class="alert alert-danger"><strong>Error!</strong> All the field must be filled up.</div>');
+                    } else {
+                        $("#address_info").html('<div class="alert alert-danger"><strong>Error</strong> processing request. Please try again.</div>');
+                        alert(html);
+                    }
                 },
                 beforeSend: function() {
                     $("#address_info").html('loading...');
@@ -787,6 +789,7 @@
 
     $(document).ready(function () {
         $('#btnUpdateAddress').click(function () {
+            email = $("#email").val();
             addId = $("#eId").val();
             fullName = $('#efullname').val();
             phoneNo = $('#ephoneNo').val();
@@ -801,7 +804,7 @@
             $.ajax({
                 type: "POST",
                 url: "../process/user.php",
-                data: "updateAddress" + "&addId=" + addId + "&fullName=" + fullName + "&phoneNo=" + phoneNo + "&stateCity=" + stateCity + "&postalCode=" + postalCode + "&detailAdd=" + detailAdd + "&labelAs=" + labelAs + 
+                data: "updateAddress" + "&email=" + email + "&addId=" + addId + "&fullName=" + fullName + "&phoneNo=" + phoneNo + "&stateCity=" + stateCity + "&postalCode=" + postalCode + "&detailAdd=" + detailAdd + "&labelAs=" + labelAs + 
                 "&defaultAdd=" + defaultAdd + "&pickupAdd=" + pickupAdd + "&returnAdd=" + returnAdd,
                 success: function (html) {
                     if(html === 'true') {

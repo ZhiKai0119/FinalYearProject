@@ -65,7 +65,7 @@
                                 <img src="Images/<?php echo $data['image'];?>" height="50px" width="50px" alt="">
                             </div>
                             <div class="col-md-6">
-                                <label class="mb-0">Status</label>
+                                <label class="mb-0">Available Status</label>
                                 <input type="checkbox" <?php echo $data['status']? "checked":""; ?> name="status">
                             </div>
                             <div class="col-md-6">

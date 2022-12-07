@@ -12,7 +12,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css" integrity="sha512-ELV+xyi8IhEApPS/pSj66+Jiw+sOT1Mqkzlh8ExXihe4zfqbWkxPRi8wptXIO9g73FSlhmquFlUOuMSoXz5IRw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js" integrity="sha512-57oZ/vW8ANMjR/KQ6Be9v/+/h6bq9/l3f0Oc7vn6qMqyhvPd1cvKBRWWpzu0QoneImqr2SkmO4MSqU+RpHom3Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-autocomplete/1.0.7/jquery.auto-complete.min.js" integrity="sha512-TToQDr91fBeG4RE5RjMl/tqNAo35hSRR4cbIFasiV2AAMQ6yKXXYhdSdEpUcRE6bqsTiB+FPLPls4ZAFMoK5WA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     </head>
     <body>
         
@@ -42,10 +42,10 @@
         <div class="py-3">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-12">
-                        <h1 class="text-center">Products</h1>
+                    <div class="col-md-12"> <!--<a class="link-dark mr-2" href="#filterProd" data-bs-toggle="offcanvas" role="button" aria-controls="filterProd"></a>-->
+                        <h1 class="text-center">Products <a class="link-dark mr-2" role="button" href="javascript:openCanvas();"><i class="fa fa-bars float-end" style="font-size:35px;" aria-hidden="true"></i></a></h1>
                         <hr>
-                        <div class="row">
+                        <div class="row" id="output">
                             <?php while ($item = $result->fetch_assoc()): ?>
                             <div class="col-lg-4 col-md-4 mb-3">
                                 <div class="product-box" style="cursor: pointer;">
@@ -62,8 +62,8 @@
 
                                             $promotion = ($original-$rental)/$original*100;
                                             ?>
-                                            <!-- <input type="hidden" id="rentPrice" name="rentPrice" value="<?php echo round($item['rental_price'],2); ?>">
-                                            <input type="hidden" id="prodPrice" name="prodPrice" value="<?php echo round($item['prodPrice'],2); ?>"> -->
+                                            <!-- <input type="hidden" id="rentPrice" name="rentPrice" value="<?php // echo round($item['rental_price'],2); ?>">
+                                            <input type="hidden" id="prodPrice" name="prodPrice" value="<?php // echo round($item['prodPrice'],2); ?>"> -->
                                             <span class="badge rouunded-0 text-light"><i class="fa fa-arrow-down" aria-hidden="true"></i> <?php echo round($promotion,2); ?>%</span>
                                         </div>
                                         <img src="../Owner/Images/<?php echo $item['image']; ?>" alt="" class="img-fluid" onclick="location.href='product_details.php?prodId=<?php echo $item['prodId']; ?>';">
@@ -125,8 +125,13 @@
 
         <?php include './rental_modal.php'; ?>
         <script type="text/javascript" src="JS/wishlist.js"></script>
+
         <script>
-            $(document).ready(function () {
+            function openCanvas() {
+                $('#filterProd').offcanvas('show');
+            }
+
+            $(document).ready(function() {
                 $('.btnRent').click(function () {
                     email = "<?php echo $userInfo['email'];?>";
                     prodId = $(this).attr("value");
@@ -149,10 +154,46 @@
                             } else {
                                 $('#deposit').val(calDeposit);
                             }
+                            changeRange();
                         }
                     });
                     return false;                    
                 });
+
+                $('#keywords').keyup(function() {
+                    var Keywords = $('#keywords').val();
+                    if(Keywords != "") {
+                        $.ajax({
+                            type: "POST",
+                            url: "process/search.php",
+                            data: {keywords:Keywords},
+                            success: function(html) {
+                                $('#content').html(html);
+                            }
+                        })
+                    } else {
+                        $('#content').html('');
+                    }
+                    $(document).on('click', 'a', function() {
+                        $('#keywords').val($(this).text());
+                        $('#content').html('');
+                    });
+                });
+
+                $(document).on('click', '#btn-search', function() {
+                    var value = $('#keywords').val();
+                    window.location.href="./display.php?searchKey=" + value;
+                });
+            });
+                
+            $('.input-daterange').datepicker({
+                format: "yyyy-mm-dd",
+                startDate: "0d",
+                endDate: "+60d",
+                todayBtn: "linked",
+                clearBtn: true,
+                autoclose: true,
+                todayHighlight: true
             });
         </script>
 

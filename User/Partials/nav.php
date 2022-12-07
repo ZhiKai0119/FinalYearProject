@@ -23,7 +23,7 @@ if (isset($_COOKIE["id"]) && isset($_COOKIE["token"])) {
     $picture = '<i class="fa fa-user-circle"></i>';
     //$picture = '<img class="rounded-circle" src="../Images/profile.png" alt="" width="25px" height="25px" style="margin-bottom: 3px;">';
     $dropItem1 = '<a class="dropdown-item" href="../index.php">Login</a>';
-    $dropItem2 = '';
+    $dropItem2 = '<a class="dropdown-item" href="../registration.php">Sign Up</a>';
     $rows = "";
 //    header("Location: ../index.php");
 //    exit();
@@ -148,7 +148,7 @@ if(isset($_GET['admin'])) {
         echo "<script>alert('You have not permission to access the admin page.');</script>";
         echo "<script>window.open('http://localhost/FinalYearProject/User/main.php','_self');</script>";
     } else {
-        echo "<script>window.open('http://localhost/FinalYearProject/Owner/main.php','_self');</script>";
+        echo "<script>window.open('http://localhost/FinalYearProject/Owner/main.php?dashboard','_self');</script>";
     }
 }
 ?>

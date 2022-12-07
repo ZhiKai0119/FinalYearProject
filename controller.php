@@ -52,7 +52,7 @@ if(isset($token["error"]) != "invalid_grant") {
         
         if($userInfo['role'] == 'Owner') {
             $recordLogin = $conn->query("INSERT INTO login (username, role) VALUES ('{$userInfo['fullName']}', '{$userInfo['role']}')");
-            header("Location: Owner/main.php");
+            header("Location: Owner/main.php?dashboard");
         } else {
             $recordLogin = $conn->query("INSERT INTO login (username, role) VALUES ('{$userInfo['fullName']}', '{$userInfo['role']}')");
             header("Location: User/main.php");
@@ -64,8 +64,8 @@ if(isset($token["error"]) != "invalid_grant") {
         $filename = time().'.'.$image_ext.'png';
         $complete_save = $filename;
         
-        $sql = "INSERT INTO users (fname, lname, fullName, picture, email, verifiedEmail, token) "
-                . "VALUES ('{$userInfo['fname']}', '{$userInfo['lname']}', '{$userInfo['fullName']}', '{$complete_save}', '{$userInfo['email']}', '{$userInfo['verifiedEmail']}', '{$userInfo['token']}')";
+        $sql = "INSERT INTO users (fname, lname, fullName, picture, email, verifiedEmail, token, role) "
+                . "VALUES ('{$userInfo['fname']}', '{$userInfo['lname']}', '{$userInfo['fullName']}', '{$complete_save}', '{$userInfo['email']}', '{$userInfo['verifiedEmail']}', '{$userInfo['token']}', 'User')";
         $insertUser = mysqli_query($conn, $sql);
         
         if($insertUser) {

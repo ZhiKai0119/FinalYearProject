@@ -14,6 +14,7 @@
             </div>
             <form id="" action="../process/user.php" method="POST">
                 <div class="modal-body">
+                    <div id="rent_info"></div>
                     <div class="form-group row mb-3">
                         <input type="hidden" id="email" name="email">
                         <h6 class="col-sm-5 col-form-label">Product ID</h6>
@@ -22,12 +23,49 @@
                         </div>
                     </div>
 
-                    <div class="form-group row mb-3">
+                    <!-- <div class="form-group row mb-3">
                         <h6 class="col-sm-5 col-form-label">Date Range</h6>
                         <div class="col-sm input-daterange input-group" id="datepicker">
                             <input type="text" class="input-sm form-control" id="startDate" name="startDate">
                             <span class="input-group-text" id="addon-wrapping">TO</span>
                             <input type="text" class="input-sm form-control" id="endDate" name="endDate" onchange="calculateDate()">
+                        </div>
+                    </div>
+
+                    <div class="form-group row mb-3">
+                        <h6 class="col-sm-5 col-form-label">Day(s)</h6>
+                        <div class="col-sm">
+                            <input type="text" readonly class="form-control-plaintext mb-1" id="rentDay" name="rentDay" value="0">
+                        </div>
+                    </div> -->
+
+                    <div class="form-group row mb-3">
+                        <h6 class="col-sm-5 col-form-label">Date</h6>
+                        <div class="col-sm input-group date" data-provide="datepicker">
+                            <span class="input-group-text" id="addon-wrapping"><i class="fa fa-calendar" aria-hidden="true"></i></span>
+                            <input type="text" class="input-sm form-control" id="startDate" name="startDate" onchange="setDisable(); calculateDate();">
+                            <input type="hidden" name="endDate" id="endDate">
+                            <div class="input-group-addon">
+                                <span class="glyphicon glyphicon-th"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row mb-3">
+                        <h6 class="col-sm-5 col-form-label">Rent Period</h6>
+                        <div class="col-sm">
+                            <select class="form-control" name="rentPeriod" id="rentPeriod" onchange="changeRange()">
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row mb-3">
+                        <h6 class="col-sm-5 col-form-label">Range</h6>
+                        <div class="col-sm">
+                            <select class="form-control" name="range" id="range" onchange="calculateDate()"></select>
                         </div>
                     </div>
 
@@ -70,8 +108,76 @@
     </div>
 </div>
 
+<div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="filterProd" aria-labelledby="filterProdLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="filterProdLabel">Products Filtering</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+            <div class="input-group rounded">
+                <input type="search" class="form-control rounded" name="keywords" id="keywords" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
+                <span class="input-group-text border-0" id="search-addon">
+                    <button type="button" class="btn shadow-none" id="btn-search"><i class="fas fa-search"></i></button>
+                </span>
+                <div class="list-group list-group-item-action" id="content"></div>
+        </div>
+        <p>Try scrolling the rest of the page to see this option in action.</p>
+        <div class="form-group row mb-3">
+            <h6 class="col-form-label">Date Range</h6>
+            <div class="col-sm input-daterange input-group" id="datepicker">
+                <input type="text" class="input-sm form-control" id="startDate" name="startDate">
+                <span class="input-group-text" id="addon-wrapping">TO</span>
+                <input type="text" class="input-sm form-control" id="endDate" name="endDate" onchange="calculateDate()">
+            </div>
+        </div>
+        <div class="form-group row mb-3">
+            <button type="button" class="btn btn-secondary btn-sm mb-2">Filter</button>
+            <button type="button" class="btn btn-primary btn-sm" id="btnClear" name="btnClear">Clear Filter</button>
+        </div>
+    </div>
+</div>
+
 <script>
-    dateArr = [];
+    var dateArr = [];
+    var days, discount;
+    date = new Date();
+
+    function changeRange() {
+        rentPeriod = $('#rentPeriod').val();
+        if(rentPeriod == "daily") {
+            $('#range').empty();
+            $("#range").prop("selectedIndex", 0);
+            days = 1;
+            discount = 0;
+            $('#rentDay').val(days);
+            for(i = 1; i < 7; i++) {
+                $('#range').append(new Option(i, i));
+            }
+        } else if(rentPeriod == "weekly") {
+            $('#range').empty();
+            $("#range").prop("selectedIndex", 0);
+            days = 7;
+            discount = 0.1;
+            $('#rentDay').val(days);
+            for(i = 1; i < 4; i++) {
+                $('#range').append(new Option(i, i));
+            }
+        } else if(rentPeriod == "monthly") {
+            $('#range').empty();
+            $("#range").prop("selectedIndex", 0);
+            days = 30;
+            discount = 0.2;
+            $('#rentDay').val(days);
+            for(i = 1; i < 7; i++) {
+                $('#range').append(new Option(i, i));
+            }
+        } else {
+            $('#range').empty();
+            days = 0;
+        }
+        calculateDate();
+    }
+
     function getReservedDate(dates) { 
         const arr = Object.values(dates);
         dateArr = arr;
@@ -85,69 +191,124 @@
         const formattedToday = yyyy + '-' + mm + '-' + dd;
 
         //TODO need to fixed some bugs, can run
+        $('.date').datepicker({
+            format: "yyyy-mm-dd",
+            startDate: "0d",
+            endDate: "+60d",
+            clearBtn: true,
+            autoclose: true,
+            todayBtn: "linked"
+        });
+
+        setDisable();
 
         if(arr.length != 0) {
-            for(i = 0; i < arr.length; i++) {
-                if(arr[i] == formattedToday) {
-                    $('.input-daterange').datepicker({
-                        format: "yyyy-mm-dd",
-                        startDate: "0d",
-                        endDate: "+60d",
-                        clearBtn: true,
-                        autoclose: true,
-                        datesDisabled: dates
-                    });
-                    break;
-                } else {
-                    $('.input-daterange').datepicker({
-                        format: "yyyy-mm-dd",
-                        startDate: "0d",
-                        endDate: "+60d",
-                        todayBtn: "linked",
-                        clearBtn: true,
-                        autoclose: true,
-                        todayHighlight: true,
-                        datesDisabled: dates
-                    });
-                }
-            }
-        } else {
-            $('.input-daterange').datepicker({
-                format: "yyyy-mm-dd",
-                startDate: "0d",
-                endDate: "+60d",
-                todayBtn: "linked",
-                clearBtn: true,
-                autoclose: true,
-                todayHighlight: true,
-                datesDisabled: dates
-            });
+        //     for(i = 0; i < arr.length; i++) {
+        //         if(arr[i] == formattedToday) {
+        //             $('.input-daterange').datepicker({
+        //                 format: "yyyy-mm-dd",
+        //                 startDate: "0d",
+        //                 endDate: "+60d",
+        //                 clearBtn: true,
+        //                 autoclose: true,
+        //                 datesDisabled: dates
+        //             });
+        //             break;
+        //         } else {
+        //             $('.input-daterange').datepicker({
+        //                 format: "yyyy-mm-dd",
+        //                 startDate: "0d",
+        //                 endDate: "+60d",
+        //                 todayBtn: "linked",
+        //                 clearBtn: true,
+        //                 autoclose: true,
+        //                 todayHighlight: true,
+        //                 datesDisabled: dates
+        //             });
+        //         }
+        //     }
+        // } else {
+        //     $('.input-daterange').datepicker({
+        //         format: "yyyy-mm-dd",
+        //         startDate: "0d",
+        //         endDate: "+60d",
+        //         todayBtn: "linked",
+        //         clearBtn: true,
+        //         autoclose: true,
+        //         todayHighlight: true,
+        //         datesDisabled: dates
+        //     });
         }
         
     }
+
+    function setDisable() {
+        if($('#startDate').val() == "") {
+            $('#rentPeriod').prop('disabled', true);
+            $('#range').prop('disabled', true);
+        } else {
+            $('#rentPeriod').prop('disabled', false);
+            $('#range').prop('disabled', false);
+        }
+    }
+
+    // Date.prototype.addDays = function (days) {
+    //     const date = new Date(this.valueOf())
+    //     date.setDate(date.getDate() + days)
+    //     return date
+    // }
     
     function calculateDate() {
-        date1 = new Date($("#startDate").datepicker("getDate"));
-        date2 = new Date($("#endDate").datepicker("getDate"));
+        // date1 = new Date($("#startDate").datepicker("getDate"));
+        // date2 = new Date($("#endDate").datepicker("getDate"));
+        range = Number($('#range').val());
+        totalDays = range * days;
+        $('#rentDay').val(totalDays);
 
-        diffTime = date2.getTime() - date1.getTime();
-        diffDays = diffTime / (1000*3600*24);
-        if(diffDays == 0) {
-            $('#rentDay').val(1);
-        } else {
-            $('#rentDay').val(diffDays);
-        }
+        // diffTime = date2.getTime() - date1.getTime();
+        // diffDays = diffTime / (1000*3600*24);
+        // if(diffDays == 0) {
+        //     $('#rentDay').val(1);
+        // } else {
+        //     $('#rentDay').val(diffDays);
+        // }
         
         //Calculate the fees based on rent days
         origFees = $('#origFees').val();
         rentDays = $('#rentDay').val();
+
+        date1 = Date.parse($("#startDate").val());
+        endDate = addDays({date: date1, days: totalDays});
+        day = new Date(endDate).getDate()-1;
+        month = new Date(endDate).getMonth() + 1;
+        year = new Date(endDate).getFullYear();
+        dateFormat = `${year}-${month}-${day}`
+        $('#endDate').val(dateFormat);
+
+        //TODO: REMOVE TESTING
+        console.log(addDays({date: date1, days: totalDays}));
+        console.log(dateFormat);
+
         rentFees = parseFloat(origFees * rentDays).toFixed(2);
-        $('#rentFees').val(rentFees);
+        discountFees = rentFees - (rentFees * discount);
+        $('#rentFees').val(discountFees);
 
         //Calculate the total number of rented
         deposit = Number($('#deposit').val());
-        totalFees = parseFloat(Number(rentFees) + deposit).toFixed(2);
+        totalFees = parseFloat(Number(discountFees) + deposit).toFixed(2);
         $('#totalFees').val(totalFees);
+    }
+
+    const addDays = ({date, days}) => {
+        if(date) {
+            let newDate = new Date(date);
+            let d = newDate.setDate(newDate.getDate() + days);
+            return new Date(d);
+        } else {
+            let newDate = new Date();
+            let d = newDate.setDate(newDate.getDate() + days);
+            return new Date(d);
+        }
     }
 
     $(document).ready(function () {
@@ -156,6 +317,8 @@
             prodId = $('#prodId').val();
             startDate = $('#startDate').val();
             endDate = $('#endDate').val();
+            rentPeriod = $('#rentPeriod').val();
+            range = $('#range').val();
             rentDay = $('#rentDay').val();
             rentFees = $('#rentFees').val();
             deposit = $('#deposit').val();
@@ -164,13 +327,15 @@
             $.ajax({
                 type: "POST",
                 url: "../process/user.php",
-                data: "rentalConfirmed" + "&email=" + email + "&prodId=" + prodId + "&startDate=" + startDate + "&endDate=" + endDate + "&rentDay=" + rentDay + "&rentFees=" + rentFees +
-                "&deposit=" + deposit + "&totalFees=" + totalFees,
+                data: "rentalConfirmed" + "&email=" + email + "&prodId=" + prodId + "&startDate=" + startDate + "&endDate=" + endDate + "&rentPeriod=" + rentPeriod + "&range=" + range + 
+                "&rentDay=" + rentDay + "&rentFees=" + rentFees + "&deposit=" + deposit + "&totalFees=" + totalFees,
                 success: function (html) {
                     if(html == "true") {
-                        redirect("Please make payment");
+                        redirect("Please go to make payment.");
                     } else if(html == "pending") {
                         errorRedirect("There still have a product pending payment.");
+                    } else if (html == "missing") {
+                        $("#rent_info").html('<div class="alert alert-danger"><strong>Error</strong> Some fields were missing.</div>');
                     }
                 }
             });
@@ -179,7 +344,15 @@
     });
 
     $('#rentDetail').on('hidden.bs.modal', function () {
-        $(this).find('form').trigger('reset');
-        $('.input-daterange').datepicker('clearDates');
+        // $(this).find('form').trigger('reset');
+        // $('.date').datepicker('clearDates');
+        // $("#rent_info").textContent = '';
+        location.reload();
     })
+
+    $(document).ready(function() {
+        $('#btnClear').click(function() {
+            window.location.href="./products.php";
+        });
+    });
 </script>

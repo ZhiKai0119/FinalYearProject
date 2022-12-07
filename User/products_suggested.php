@@ -78,6 +78,7 @@ $get_prod = $conn->query("SELECT * FROM products WHERE status = 1 ORDER BY RAND(
                     } else {
                         $('#deposit').val(calDeposit);
                     }
+                    changeRange();
                 }
             });
             return false;                    
