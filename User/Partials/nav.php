@@ -18,6 +18,13 @@ if (isset($_COOKIE["id"]) && isset($_COOKIE["token"])) {
     } else {
         $rows = "";
     }
+
+    $pending_fine = $conn->query("SELECT * FROM fine WHERE email = '$email' AND pay_status = 'Pending'");
+    if(mysqli_num_rows($pending_fine) > 0) {
+        $fine = mysqli_num_rows($pending_fine);
+    } else {
+        $fine = "";
+    }
 } else {
     $fullName = "Profile";
     $picture = '<i class="fa fa-user-circle"></i>';
@@ -25,6 +32,7 @@ if (isset($_COOKIE["id"]) && isset($_COOKIE["token"])) {
     $dropItem1 = '<a class="dropdown-item" href="../index.php">Login</a>';
     $dropItem2 = '<a class="dropdown-item" href="../registration.php">Sign Up</a>';
     $rows = "";
+    $fine = "";
 //    header("Location: ../index.php");
 //    exit();
 }
@@ -113,16 +121,19 @@ if (isset($_COOKIE["id"]) && isset($_COOKIE["token"])) {
                         <a class="nav-link" href="./categories.php"><i class="fa fa-cubes"></i> Collections</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="./aboutUs.php"><i class="fa fa-building"></i> About Us</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="./contactUs.php"><i class="fa fa-fw fa-envelope"></i> Contact Us</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="./wishlist.php"><i class="fa fa-heart"></i> Wishlist</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link notification" href="./pendingRental.php"><i class="fa fa-shopping-bag"></i> Rental <span class="badge badge-pill badge-danger"><?php echo $rows; ?></span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link notification" href="./fine_list.php"><i class="fa fa-dollar"></i> Fine <span class="badge badge-pill badge-danger"><?php echo $fine; ?></span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./aboutUs.php"><i class="fa fa-building"></i> About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./contactUs.php"><i class="fa fa-fw fa-envelope"></i> Contact Us</a>
                     </li>
                 </ul>                
 
@@ -134,6 +145,7 @@ if (isset($_COOKIE["id"]) && isset($_COOKIE["token"])) {
                         </a>
                         <div class="dropdown-menu dropdown-menu-right bg-light" aria-labelledby="dropdown_target">
                             <a class="dropdown-item" href="main.php?admin" target="_self">Admin</a>
+                            <a class="dropdown-item" href="comingSoon.php" target="_self">Selling</a>
                             <?php echo $dropItem1; ?>
                             <?php echo $dropItem2; ?>
                         </div>
@@ -144,7 +156,7 @@ if (isset($_COOKIE["id"]) && isset($_COOKIE["token"])) {
 <?php 
 if(isset($_GET['admin'])) {
     $userRole = $userInfo['role'];
-    if($userRole != 'Owner') {
+    if($userRole != 'Admin') {
         echo "<script>alert('You have not permission to access the admin page.');</script>";
         echo "<script>window.open('http://localhost/FinalYearProject/User/main.php','_self');</script>";
     } else {

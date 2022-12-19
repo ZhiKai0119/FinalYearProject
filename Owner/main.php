@@ -36,8 +36,14 @@
                 if(isset($_GET['add-category'])) {
                     include 'add-category.php';
                 } 
+                if(isset($_GET['add-sCategory'])) {
+                    include '../Jensen/admin/add-category.php';
+                } 
                 if(isset($_GET['edit-category'])) {
                     include "edit-category.php";
+                } 
+                if(isset($_GET['edit-sCategory'])) {
+                    include "../Jensen/admin/edit-category.php";
                 } 
                 if(isset($_GET['view-product'])) {
                     include "view-product.php";
@@ -45,11 +51,32 @@
                 if(isset($_GET['add-product'])) {
                     include "add-product.php";
                 } 
+                if(isset($_GET['add-sProduct'])) {
+                    include "../Jensen/admin/add-product.php";
+                } 
                 if(isset($_GET['edit-product'])) {
                     include "edit-product.php";
                 } 
+                if(isset($_GET['edit-sProduct'])) {
+                    include "../Jensen/admin/edit-product.php";
+                } 
                 if(isset($_GET['view-rental'])) {
                     include "view-rental.php";
+                } 
+                if(isset($_GET['view-voucher'])) {
+                    include "../Jensen/admin/view-voucher.php";
+                } 
+                if(isset($_GET['edit-voucher'])) {
+                    include "../Jensen/admin/edit-voucher.php";
+                } 
+                if(isset($_GET['view-delivery'])) {
+                    include "view-delivery.php";
+                } 
+                if(isset($_GET['view-return'])) {
+                    include "view-return.php";
+                } 
+                if(isset($_GET['view-users'])) {
+                    include "view-users.php";
                 } 
                 if(isset($_GET['donate'])) {
                     include "add_donation.php";
@@ -82,9 +109,11 @@
         <!--Alertify Js-->
         <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
         <script>
+            alertify.set('notifier','position', 'top-right');
             <?php if(isset($_COOKIE['status'])) { ?>
-                alertify.set('notifier','position', 'top-right');
                 alertify.success('<?php echo $_COOKIE['status']; ?>'); 
+            <?php } elseif(isset($_COOKIE['failureStatus'])) { ?>
+                alertify.error('<?php echo $_COOKIE['failureStatus']; ?>'); 
             <?php } ?>
         </script>
         

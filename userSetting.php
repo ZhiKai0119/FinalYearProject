@@ -1,14 +1,7 @@
 
-<!--        <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>R&S - User Setting</title>-->
-<!--        <link type="text/css" rel="stylesheet" href="CSS/userSetting.css"> -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">        
-<!--        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">-->
-<!--        <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">-->
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">-->
 
     <style>
         .bg-common {
@@ -99,6 +92,7 @@
                                     <a data-toggle='tab' class="nav-link" href="#address"><i class="fas fa-map mr-1"></i> Address</a>
                                     <a data-toggle='tab' class="nav-link" href="#notification"><i class="fas fa-bell mr-1"></i> Notification</a>
                                     <a data-toggle='tab' class="nav-link" href="#billing"><i class="fas fa-money-check-alt mr-1"></i> Billing</a>
+                                    <a data-toggle='tab' class="nav-link" href="#tracking"><i class="fas fa-route mr-1"></i> Tracking</a>
                                 </nav>
                             </div>
                         </div>
@@ -127,11 +121,13 @@
                                     <li class="nav-item">
                                         <a data-toggle='tab' class="nav-link" href="#billing"><i class="fas fa-money-check-alt mr-1"></i></a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a data-toggle='tab' class="nav-link" href="#tracking"><i class="fas fa-route mr-1"></i></a>
+                                    </li>
                                 </ul>
                             </div>
 
                             <div class="card-body tab-content border-0">
-
                                 <!--user profile-->
                                 <div class="tab-pane active" id="profile">
                                     <h6>YOUR PROFILE INFORMATION</h6>
@@ -165,16 +161,6 @@
                                                 <input type="text" class="form-control" id="lname" name="lname" value="<?php echo $userInfo['lname']; ?>">
                                             </div>    
                                         </div>
-
-<!--                                            <div class="mb-3">
-                                            <label for="bio" class="form-label">Your Bio</label>
-                                            <textarea class="form-control" id="bio" rows="3" placeholder="I am a full stack developer."></textarea>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="url" class="form-label">URL</label>
-                                            <input type="text" class="form-control" id="url" placeholder="https://www.w3school.com">
-                                        </div>-->
-
                                         <div class="form-group form-text text-muted small">
                                             All of the fields on this page are optional and can be deleted at any time,
                                             and by filling them out, you're giving us consent to share this data wherever your user profile appears.
@@ -341,8 +327,36 @@
                                         </div>
                                         <div class="mb-3">
                                             <label class="d-block">Payment History</label>
-                                            <div class="border p-3 text-center">
-                                                You have not made any payment.
+                                            <div class="border">
+                                                <?php  
+                                                $email = $userInfo['email'];
+                                                $i = 1;
+                                                $pay_record = $conn->query("SELECT * FROM payments WHERE payer_email = '$email' AND payment_status = 'Successful'");
+                                                if(mysqli_num_rows($pay_record) > 0) { ?>
+                                                    <ul class="list-group">
+                                                        <?php while($result = $pay_record->fetch_assoc()): 
+                                                            $payment_id = $result['payment_id'];
+                                                            $find_prod = $conn->query("SELECT * FROM rental_details rd, payments p WHERE rd.payment_id = p.payment_id AND p.payment_id = '$payment_id'"); 
+                                                            $rentInfo = $find_prod->fetch_assoc(); ?>
+                                                        <li class="list-group-item">
+                                                            <div class="row">
+                                                                <div class="col-md-1">
+                                                                    <?php echo $i; ?>
+                                                                </div>
+                                                                <div class="col-lg">
+                                                                    <h6><b>Payment ID: </b><?php echo $result['payment_id']; ?> [<?php echo $result['payment_mode']; ?>]</h6>
+                                                                    <h6><b>Amount Paid: </b>RM<?php echo $result['amount']; ?></h6>
+                                                                </div>
+                                                                <div class="col-lg-4">
+                                                                    <h6><b>Rental ID: </b><?php echo $rentInfo['rental_id']; ?></h6>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                        <?php $i++; endwhile; ?>
+                                                    </ul>
+                                                <?php } else { ?>
+                                                    You have not made any payment.
+                                                <?php } ?>
                                             </div>
                                         </div>
                                     </form>
@@ -387,6 +401,26 @@
                                             <br>
                                             <button type="button" class="btn btn-outline-info mt-2" data-bs-toggle="modal" data-bs-target="#addAddress">Add Address</button>
                                         </div>                
+                                    </form>
+                                </div>
+
+                                <!-- Tracking Package -->
+                                <div class="tab-pane" id="tracking">
+                                    <h6>TRACKING</h6>
+                                    <hr>
+                                    <form action="">
+                                        <select class="form-control mb-3" name="trackNo" id="trackNo">
+                                            <option value="none">-- Please Select The Tracking ID --</option>
+                                            <?php 
+                                            $get_track = $conn->query("SELECT * FROM rental_details WHERE email = '$email'");
+                                            while($trackInfo = $get_track->fetch_assoc()) { ?>
+                                                <option value="<?php echo $trackInfo['tracking_no']; ?>"><?php echo $trackInfo['tracking_no']; ?></option>
+                                            <?php } ?>
+                                        </select>
+                                        <div class="mb-3">
+                                            <label for="currentStatus" class="form-label">Current Status</label>
+                                            <input type="text" class="form-control" id="currentStatus" name="currentStatus" value="" readonly>
+                                        </div>
                                     </form>
                                 </div>
                             </div>
@@ -787,6 +821,7 @@
         });
     });
 
+    //FOR UPDATE ADDRESS
     $(document).ready(function () {
         $('#btnUpdateAddress').click(function () {
             email = $("#email").val();
@@ -826,9 +861,24 @@
         });
     });
 
+    //FOR TRACKING NO
+    $(document).ready(function () {
+        $('#trackNo').change(function() {
+            trackNo = $('#trackNo').val();
+            $.ajax({
+                type: "POST",
+                url: "../process/user.php",
+                data: "getCurrentStatus" + "&trackNo=" + trackNo,
+                success: function(html) {
+                    obj = JSON.parse(html);
+                    $('#currentStatus').val(obj.status);
+                }
+            })
+        });
+    });
     //FIXME: Notification
     </script>
-
+    
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>

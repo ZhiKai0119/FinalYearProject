@@ -228,7 +228,7 @@ if(isset($_FILES["image"]["name"])) {
     $row = mysqli_fetch_array($result);
     $lastId = $row['addId'];
     if($lastId == "") {
-        $addId = "ADD1";
+        $addId = "ADD1001";
     } else {
         $addId = substr($lastId, 3);
         $addId = intval($addId);
@@ -415,19 +415,7 @@ if(isset($_FILES["image"]["name"])) {
     } else {
         errorRedirect("../User/userProfile.php", "Something Went Wrong");
     }
-} elseif (isset($_POST['rentalConfirmed'])) { //TODO: validation check
-    $query = "SELECT * FROM pending_rent ORDER BY rentId desc limit 1";
-    $result = mysqli_query($conn, $query);
-    $row = mysqli_fetch_array($result);
-    $lastId = $row['rentId'];
-    if($lastId == "") {
-        $rentId = "RENT1001";
-    } else {
-        $rentId = substr($lastId, 4);
-        $rentId = intval($rentId);
-        $rentId = "RENT".($rentId + 1);
-    }
-    
+} elseif (isset($_POST['rentalConfirmed'])) {
     $email = $_POST['email'];
     $prodId = $_POST['prodId'];
     $startDate = $_POST['startDate'];
@@ -436,8 +424,6 @@ if(isset($_FILES["image"]["name"])) {
     $range = $_POST['range'];
     $rentDay = $_POST['rentDay'];
     $rentFees = $_POST['rentFees'];
-    $deposit = $_POST['deposit'];
-    $totalFees = $_POST['totalFees'];
 
     if($startDate == null) {
         echo "missing";
@@ -446,12 +432,37 @@ if(isset($_FILES["image"]["name"])) {
         if(mysqli_num_rows($check_pending) > 0) {
             echo "pending";
         } else {
-            $pending_rent = $conn->query("INSERT INTO pending_rent (rentId, email, prodId, startDate, endDate, rentPeriod, dateRange, rentDay, rentFees, deposit, totalFees, confirmRent, status) 
-            VALUES ('$rentId', '$email', '$prodId', '$startDate', '$endDate', '$rentPeriod', '$range', '$rentDay', '$rentFees', '$deposit', '$totalFees', 0, 'Pending')");
-            if($pending_rent) {
-                echo "true";
+            $check_existing = $conn->query("SELECT * FROM pending_rent WHERE email = '$email' AND status = 'Pending'");
+            if(mysqli_num_rows($check_existing) > 0) {
+                $row = $check_existing->fetch_assoc();
+                $rentId = $row['rentId'];
+                $pending_rent = $conn->query("INSERT INTO pending_rent (rentId, email, prodId, startDate, endDate, rentPeriod, dateRange, rentDay, rentFees, confirmRent, status) 
+                VALUES ('$rentId', '$email', '$prodId', '$startDate', '$endDate', '$rentPeriod', '$range', '$rentDay', '$rentFees', 0, 'Pending')");
+                if($pending_rent) {
+                    echo "true";
+                } else {
+                    echo "false";
+                }
             } else {
-                echo "false";
+                $query = "SELECT * FROM pending_rent ORDER BY rentId desc limit 1";
+                $result = mysqli_query($conn, $query);
+                $row = mysqli_fetch_array($result);
+                $lastId = $row['rentId'];
+                if($lastId == "") {
+                    $rentId = "RENT1001";
+                } else {
+                    $rentId = substr($lastId, 4);
+                    $rentId = intval($rentId);
+                    $rentId = "RENT".($rentId + 1);
+                }
+
+                $pending_rent = $conn->query("INSERT INTO pending_rent (rentId, email, prodId, startDate, endDate, rentPeriod, dateRange, rentDay, rentFees, confirmRent, status) 
+                VALUES ('$rentId', '$email', '$prodId', '$startDate', '$endDate', '$rentPeriod', '$range', '$rentDay', '$rentFees', 0, 'Pending')");
+                if($pending_rent) {
+                    echo "true";
+                } else {
+                    echo "false";
+                }
             }
         }
     }
@@ -510,46 +521,32 @@ if(isset($_FILES["image"]["name"])) {
     $addId = [];
     $methodId = [];
 
-    $rental = $conn->query("SELECT * FROM pending_rent WHERE rentId = '$rentId' LIMIT 1");
-    if(mysqli_num_rows($rental) > 0) {
-        $rentDetail = mysqli_fetch_array($rental);
-
-        $prodId = $rentDetail['prodId'];
-        $product = $conn->query("SELECT * FROM products WHERE prodId = '$prodId' LIMIT 1");
-        if(mysqli_num_rows($product) > 0) {
-            $prodDetail = mysqli_fetch_array($product);
-
-            $address = $conn->query("SELECT * FROM address WHERE email = '$email'");
-            if(mysqli_num_rows($address) > 0) {
-                while($addDetail = $address->fetch_array()) {
-                    $addId[] = $addDetail['addId'];
-                }
-            }
-
-            $payMethod = $conn->query("SELECT * FROM paymentmethod WHERE email = '$email'");
-            if(mysqli_num_rows($payMethod) > 0) {
-                while($payDetail = $payMethod->fetch_array()) {
-                    $methodId[] = $payDetail['methodId'];
-                }
-            }
-
-            $rentInfo = [
-                'prodId'=>$rentDetail['prodId'],
-                'startDate'=>$rentDetail['startDate'],
-                'endDate'=>$rentDetail['endDate'],
-                'rentFees'=>$rentDetail['rentFees'],
-                'deposit'=>$rentDetail['deposit'],
-                'totalFees'=>$rentDetail['totalFees'],
-                'prodImg'=>$prodDetail['image'],
-                'addId'=>$addId,
-                'methodId'=>$methodId
-            ];
+    $address = $conn->query("SELECT * FROM address WHERE email = '$email'");
+    if(mysqli_num_rows($address) > 0) {
+        while($addDetail = $address->fetch_array()) {
+            $addId[] = $addDetail['addId'];
         }
-
-        echo json_encode($rentInfo);
-    } else {
-        echo "false";
     }
+
+    $payMethod = $conn->query("SELECT * FROM paymentmethod WHERE email = '$email'");
+    if(mysqli_num_rows($payMethod) > 0) {
+        while($payDetail = $payMethod->fetch_array()) {
+            $methodId[] = $payDetail['methodId'];
+        }
+    }
+
+    $rentInfo = [
+        // 'prodId'=>$rentDetail['prodId'],
+        // 'startDate'=>$rentDetail['startDate'],
+        // 'endDate'=>$rentDetail['endDate'],
+        // 'rentFees'=>$rentDetail['rentFees'],
+        // 'prodImg'=>$prodDetail['image'],
+        'rentId'=>$rentId,
+        'email'=>$email,
+        'addId'=>$addId,
+        'methodId'=>$methodId
+    ];
+    echo json_encode($rentInfo);
 } elseif (isset($_POST['getAddress'])) {
     $addId = $_POST['addId'];
 
@@ -581,7 +578,19 @@ if(isset($_FILES["image"]["name"])) {
         'cvv'=>$payMethodDetail['cvv']
     ];
     echo json_encode($methodInfo);
-} elseif (isset($_POST['makePayment'])) {
+} elseif (isset($_POST['makePayment'])) { //MAKE PAYMENT BY PAYPAL
+    $query = "SELECT * FROM loan ORDER BY loanId desc LIMIT 1";
+    $result = mysqli_query($conn, $query);
+    $row = mysqli_fetch_array($result);
+    $lastId = $row['loanId'];
+    if($lastId == "") {
+        $loanId = "LOAN5001";
+    } else {
+        $loanId = substr($lastId, 4);
+        $loanId = intval($loanId);
+        $loanId = "LOAN".($loanId + 1);
+    }
+    
     $email = $_POST['email'];
     $totalPay = $_POST['totalPay'];
     $rentId = $_POST['rentId'];
@@ -590,9 +599,10 @@ if(isset($_FILES["image"]["name"])) {
     $payment_id = $_POST['payment_id'];
 
     $tracking_no = uniqid('TRACK');
+    $pending_rent = $conn->query("UPDATE pending_rent SET confirmRent = '1', status = 'Pending Return' WHERE rentId = '$rentId'");
     $payment = $conn->query("INSERT INTO payments (payment_id, payer_email, amount, currency, payment_mode, payment_status) VALUES ('$payment_id', '$email', '$totalPay', 'MYR', '$payment_mode', 'Successful')");
     $rental_detail = $conn->query("INSERT INTO rental_details (rental_id, payment_id, email, address_id, tracking_no, rental_status) VALUES ('$rentId', '$payment_id', '$email', '$addId', '$tracking_no', 'Pending Delivery')");
-    $pending_rent = $conn->query("UPDATE pending_rent SET confirmRent = '1', status = 'Done' WHERE rentId = '$rentId'");
+    $loan = $conn->query("INSERT INTO loan (loanId, rentId, email, loan_status) VALUES ('$loanId', '$rentId', '$email', 'Incomplete')");
     echo "success";
 } elseif (isset($_POST['requestTAC'])) {
     $email = $_POST['email'];
@@ -643,7 +653,19 @@ if(isset($_FILES["image"]["name"])) {
             echo 'false';
         }
     }    
-} elseif (isset($_POST['verifyTAC'])) {
+} elseif (isset($_POST['verifyTAC'])) { //MAKE PAYMENT BY CARD
+    $query = "SELECT * FROM loan ORDER BY loanId desc LIMIT 1";
+    $result = mysqli_query($conn, $query);
+    $row = mysqli_fetch_array($result);
+    $lastId = $row['loanId'];
+    if($lastId == "") {
+        $loanId = "LOAN5001";
+    } else {
+        $loanId = substr($lastId, 4);
+        $loanId = intval($loanId);
+        $loanId = "LOAN".($loanId + 1);
+    }
+
     $email = $_POST['email'];
     $tac = $_POST['tac'];
     $totalPay = $_POST['totalPay'];
@@ -654,9 +676,10 @@ if(isset($_FILES["image"]["name"])) {
         if($tac == $_COOKIE['tac']) {
             $payment_id = md5(time() . mt_rand(1, 1000000));
             $tracking_no = uniqid('TRACK');
+            $pending_rent = $conn->query("UPDATE pending_rent SET confirmRent = '1' AND status = 'Pending Return' WHERE rentId = '$rentId'");
             $payment = $conn->query("INSERT INTO payments (payment_id, payer_email, amount, currency, payment_mode, payment_status) VALUES ('$payment_id', '$email', '$totalPay', 'MYR', 'Card', 'Successful')");
             $rental_detail = $conn->query("INSERT INTO rental_details (rental_id, payment_id, email, address_id, tracking_no, rental_status) VALUES ('$rentId', '$payment_id', '$email', '$addId', '$tracking_no', 'Pending Delivery')");
-            $pending_rent = $conn->query("UPDATE pending_rent SET confirmRent = '1' AND status = 'Done' WHERE rentId = '$rentId'");
+            $loan = $conn->query("INSERT INTO loan (loanId, rentId, email, loan_status) VALUES ('$loanId', '$rentId', '$email', 'Incomplete')");
             echo "match";
         } else {
             echo "nMatch";
@@ -664,5 +687,27 @@ if(isset($_FILES["image"]["name"])) {
     } else {
         echo "error";
     }
+} elseif (isset($_POST['payFine'])) {
+    $fineId = $_POST['fineId'];
+    $rentId = $_POST['rentId'];
+
+    $update_fine = $conn->query("UPDATE fine SET pay_status = 'Paid' WHERE fineId = '$fineId'");
+    $update_rent = $conn->query("UPDATE pending_rent SET status = 'Completed' WHERE fineId = '$fineId'");
+    if($update_fine && $update_rent) {
+        $check_status = $conn->query("SELECT * FROM pending_rent WHERE fineId = '$fineId' AND status = 'Pending Return' OR status = 'Pending Fine'");
+        if(mysqli_num_rows($check_status) == 0) {
+
+            $update_loan = $conn->query("UPDATE loan SET loan_status = 'Completed' WHERE rentId = '$rentId'");
+        }
+        echo "success";
+    }
+} elseif (isset($_POST['getCurrentStatus'])) {
+    $trackNo = $_POST['trackNo'];
+    $track = $conn->query("SELECT * FROM rental_details WHERE tracking_no = '$trackNo'");
+    $result = $track->fetch_assoc();
+    $trackInfo = [
+        'status'=>$result['rental_status']
+    ];
+    echo json_encode($trackInfo);
 }
 ?>

@@ -7,36 +7,41 @@ while($price = $calculate_total->fetch_assoc()) {
 
 $count_pending = $conn->query("SELECT COUNT(rental_status) as total FROM rental_details WHERE rental_status = 'Pending Delivery'");
 $num = $count_pending->fetch_assoc();
+
+$total_user = $conn->query("SELECT * FROM users")->num_rows;
+$pending_rent = $conn->query("SELECT * FROM pending_rent WHERE status = 'Pending'")->num_rows;
 ?>
 
 <!-- CSS only -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
 <!-- JavaScript Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
     google.charts.load('current', {'packages':['corechart']});
     google.charts.setOnLoadCallback(drawChart);
 
     function drawChart() {
-    var data = google.visualization.arrayToDataTable([
-        ['Year', 'Sales', 'Expenses'],
-        ['2004',  1000,      400],
-        ['2005',  1170,      460],
-        ['2006',  660,       1120],
-        ['2007',  1030,      540]
-    ]);
+        var data = google.visualization.arrayToDataTable([
+            ['Month', 'Revenue'],
+            <?php
+            $chartRevenue = $conn->query("SELECT DISTINCT(MONTHNAME(rd.created_at)) AS month, SUM(p.amount) AS amount FROM rental_details rd, payments p WHERE rd.payment_id = p.payment_id GROUP BY MONTH(rd.created_at)");
+            while($record = $chartRevenue->fetch_assoc()) {
+                echo "['".$record['month']."',".$record['amount']."],";
+            }
+            ?>
+        ]);
 
-    var options = {
-        title: 'Company Performance',
-        curveType: 'function',
-        legend: { position: 'bottom' }
-    };
+        var options = {
+            title: 'Total Revenue Based On Month',
+            curveType: 'function',
+            legend: { position: 'bottom' }
+        };
 
-    var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+        var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
 
-    chart.draw(data, options);
+        chart.draw(data, options);
     }
 </script>
 
@@ -45,16 +50,19 @@ $num = $count_pending->fetch_assoc();
     google.charts.setOnLoadCallback(drawChart);
     function drawChart() {
     var data = google.visualization.arrayToDataTable([
-        ['Task', 'Hours per Day'],
-        ['Work',     11],
-        ['Eat',      2],
-        ['Commute',  2],
-        ['Watch TV', 2],
-        ['Sleep',    7]
+        ['Category', 'Number of Products'],
+        <?php
+        $chartCategory = $conn->query("SELECT * FROM categories");
+        while($category = $chartCategory->fetch_assoc()) {
+            $catId = $category['catId'];
+            $numCategory = $conn->query("SELECT * FROM products WHERE catId = '$catId'")->num_rows;
+            echo "['". $category['catName'] ."',".$numCategory."],";
+        }
+        ?>
     ]);
 
     var options = {
-        title: 'My Daily Activities',
+        title: 'Categories',
         is3D: true,
     };
 
@@ -72,15 +80,28 @@ $num = $count_pending->fetch_assoc();
     .table-wrapper-scroll-y {
         display: block;
     }
+
+    @media print {
+        body {
+            visibility: hidden;
+        }
+        #dashboard{
+            visibility: visible;
+            position: absolute;
+            top: 20px;
+            width: 80%;
+            font-size: 18px;
+        }
+    }
 </style>
 
-<div class="container-fluid">
+<div class="container-fluid" id="dashboard">
     <!-- <div class="row">
         <div class="col-md-12"> -->
             <div class="card border-0 bg-transparent">
                 <div class="card-header border-0 d-sm-flex align-items-center justify-content-between mb-2">
                     <h4 class="text-uppercase font-weight-bold">Dashboard</h4>
-                    <a class="d-none d-sm-inline-block btn btn-primary shadow-sm" href="#">
+                    <a class="d-none d-sm-inline-block btn btn-primary shadow-sm" href="#" onclick="window.print()">
                         <i class='bx bx-download text-white-50'></i>
                         Generate Report
                     </a>
@@ -93,7 +114,7 @@ $num = $count_pending->fetch_assoc();
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-primary text-uppercase">Total Revenue</div>
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase">Total Annual Revenue</div>
                                         <div class="h5 mb-0 font-weight-bold text-gray-800">RM <?php echo $total; ?></div>
                                     </div>
                                     <div class="col-auto">
@@ -104,17 +125,34 @@ $num = $count_pending->fetch_assoc();
                         </div>
                     </div>
 
-                    <!-- Earnings (Annual) Card Sample -->
-                    <div class="col-xl-3 col-md-6 mb-4">
+                    <!-- Total User Card Sample -->
+                    <div class="col-xl-3 col-md-6 mb-4" style="cursor: pointer;" onclick="window.location.href='main.php?view-users'">
                         <div class="card border-left border-success shadow h-100 py-2">
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-success text-uppercase">Earnings (Annual)</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">RM 40,000</div>
+                                        <div class="text-xs font-weight-bold text-success text-uppercase">Total Users</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $total_user; ?></div>
                                     </div>
                                     <div class="col-auto">
-                                        <i class='bx bx-dollar bx-md text-muted pr-2'></i>
+                                    <i class='bx bx-user bx-md text-muted pr-2'></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pending Rent Card Sample -->
+                    <div class="col-xl-3 col-md-6 mb-4" style="cursor: pointer;" onclick="window.location.href='main.php?view-rental'">
+                        <div class="card border-left border-info shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-success text-uppercase">Pending Rent</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $pending_rent; ?></div>
+                                    </div>
+                                    <div class="col-auto">
+                                    <i class='bx bx-timer bx-md text-muted pr-2'></i>
                                     </div>
                                 </div>
                             </div>
@@ -122,7 +160,7 @@ $num = $count_pending->fetch_assoc();
                     </div>
 
                     <!-- Tasks Example -->
-                    <div class="col-xl-3 col-md-6 mb-4">
+                    <!-- <div class="col-xl-3 col-md-6 mb-4">
                         <div class="card border-left border-info shadow h-100 py-2">
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
@@ -145,10 +183,10 @@ $num = $count_pending->fetch_assoc();
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
 
                     <!-- Pending Request -->
-                    <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="col-xl-3 col-md-6 mb-4" style="cursor: pointer;" onclick="window.location.href='main.php?view-delivery'">
                         <div class="card border-left border-warning shadow h-100 py-2">
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
@@ -166,18 +204,10 @@ $num = $count_pending->fetch_assoc();
 
                     <!-- Content Row -->
                     <div class="row">
-                        <div class="col-xl-8 col-lg-7">
+                        <div class="col-xl-8 col-lg-7" id="line-chart">
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3 d-flex flex-row aligh-items-center justify-content-between">
                                     <h6 class="m-0 font-weight-bold text-primary">Earnings Overview</h6>
-                                    <!-- <div class="dropdown no-arrow">
-                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expended="false"><i class='bx bx-dots-vertical-rounded text-muted'></i></a>
-                                        <div class="dropdown-menu dropdown-menu-right shadow">
-                                            <div class="dropdown-header">Dropdown Header:</div>
-                                            <a class="dropdown-item" href="#">Action</a>
-                                            <a class="dropdown-item" href="#">Another action</a>
-                                        </div>
-                                    </div> -->
                                 </div>
                                 <div class="card-body">
                                     <div class="chart-area">
@@ -191,7 +221,7 @@ $num = $count_pending->fetch_assoc();
                         <div class="col-xl-4 col-lg-5">
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3 d-flex flex-row aligh-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary">Revenue Resources</h6>
+                                    <h6 class="m-0 font-weight-bold text-primary">Product Categories</h6>
                                 </div>
                                 <div class="card-body">
                                     <div class="pie-chart">
@@ -228,7 +258,7 @@ $num = $count_pending->fetch_assoc();
                                                 $role = $row['role'];
                                                 $loginDateTime = $row['loginDateTime'];
                                                 $logoutDateTime = $row['logoutDateTime'];  
-                                                if($role == 'Owner') { ?>
+                                                if($role == 'Admin') { ?>
                                                     <tr class="table-primary">
                                                 <?php } else { ?>
                                                     <tr class="table-secondary">

@@ -39,7 +39,7 @@ if(isset($_POST['add_category_btn'])) {
         move_uploaded_file($_FILES['image']['tmp_name'], $path.'/'.$filename);
         redirect("../main.php?add-category", "Category Added Successfully");
     } else {
-        redirect("../main.php?add-category", "Something Went Wrong");
+        errorRedirect("../main.php?add-category", "Something Went Wrong");
     }
 } 
 else if(isset($_POST['update_category_btn'])) {
@@ -78,7 +78,7 @@ else if(isset($_POST['update_category_btn'])) {
         }
         redirect("../main.php?edit-category&id=$category_id", "Category Updated Successfully");
     } else {
-        redirect("../main.php?edit-category&id=$category_id", "Something Went Wrong");
+        errorRedirect("../main.php?edit-category&id=$category_id", "Something Went Wrong");
     }
 }
 else if(isset($_POST['delete_category_btn'])) {
@@ -96,7 +96,7 @@ else if(isset($_POST['delete_category_btn'])) {
         }
         redirect("../main.php?categories", "Category Deleted Successfully");
     } else {
-        redirect("../main.php?categories", "Something Went Wrong");
+        errorRedirect("../main.php?categories", "Something Went Wrong");
     }
 } 
 else {

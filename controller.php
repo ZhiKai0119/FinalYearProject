@@ -50,7 +50,7 @@ if(isset($token["error"]) != "invalid_grant") {
 //            $recordLogin = $conn->query("INSERT INTO login (username, role) VALUES ('{$userInfo['fullName']}', '{$userInfo['role']}')");
 //        }
         
-        if($userInfo['role'] == 'Owner') {
+        if($userInfo['role'] == 'Admin') {
             $recordLogin = $conn->query("INSERT INTO login (username, role) VALUES ('{$userInfo['fullName']}', '{$userInfo['role']}')");
             header("Location: Owner/main.php?dashboard");
         } else {

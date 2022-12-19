@@ -28,7 +28,7 @@ function getProfilePicture($name) {
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Sharp" rel="stylesheet">
 <div class="sidebar close">
     <div class="logo-details">
-        <a href="main.php?dashboard" style="text-decoration: none; color: white;"><img src="../Images/RNS_white.png" width="30px" height="30px" class="ml-4" onclick="main.php?dashboard"></a>
+        <a href="main.php?dashboard" style="text-decoration: none; color: white;"><img src="../Images/RNS_white.png" width="30px" height="30px" class="ml-4"></a>
         <span class="logo_name"><a href="main.php?dashboard" style="text-decoration: none; color: white;">R&S Service</a></span>
     </div>
     <ul class="nav-links">
@@ -45,7 +45,8 @@ function getProfilePicture($name) {
             </div>
             <ul class="sub-menu">
                 <li><a class="link_name" href="main.php?categories">Category</a></li>
-                <li><a href="main.php?add-category">Add Category</a></li>
+                <li><a href="main.php?add-category">Add Rental Category</a></li>
+                <li><a href="main.php?add-sCategory">Add Selling Category</a></li>
             </ul>
         </li>
         <li>
@@ -55,7 +56,19 @@ function getProfilePicture($name) {
             </div>
             <ul class="sub-menu">
                 <li><a class="link_name" href="main.php?view-product">Product</a></li>
-                <li><a href="main.php?add-product">Add Product</a></li>
+                <li><a href="main.php?add-product">Add Rental Product</a></li>
+                <li><a href="main.php?add-sProduct">Add Selling Product </a></li>
+            </ul>
+        </li>
+        <li>
+            <div class="iocn-link">
+                <a href="main.php?view-voucher"><i class='bx bxs-discount'></i><span class="link_name">Voucher</span></a>
+                <i class='bx bxs-chevron-down arrow' ></i>
+            </div>
+            <ul class="sub-menu">
+                <li><a class="link_name" href="main.php?view-voucher">Voucher</a></li>
+                <!-- <li><a href="main.php?add-product">Add Rental Product</a></li>
+                <li><a href="main.php?add-sProduct">Add Selling Product </a></li> -->
             </ul>
         </li>
         <li>
@@ -65,16 +78,17 @@ function getProfilePicture($name) {
             </div>
             <ul class="sub-menu">
                 <li><a class="link_name" href="main.php?view-rental">Rental</a></li>
-                <!-- <li><a href="main.php?add-product">Add Product</a></li> -->
+                <li><a href="main.php?view-delivery">Delivery</a></li>
+                <li><a href="main.php?view-return">Return</a></li>
             </ul>
         </li>
         <li>
             <div class="iocn-link">
-                <a href="#"><i class='bx bxs-user-account'></i><span class="link_name" style="font-size: 16px;">User Accounts</span></a>
+                <a href="main.php?view-users"><i class='bx bxs-user-account'></i><span class="link_name" style="font-size: 16px;">User Accounts</span></a>
                 <i class='bx bxs-chevron-down arrow' ></i>
             </div>
             <ul class="sub-menu">
-                <li><a class="link_name" href="#">User Accounts</a></li>
+                <li><a class="link_name" href="main.php?view-users">User Accounts</a></li>
                 <li><a href="main.php?subscribe">Subscribers</a></li>
             </ul>
         </li>

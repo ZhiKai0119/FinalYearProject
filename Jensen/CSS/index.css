@@ -1,0 +1,143 @@
+/* First Img*/
+.intro img{
+    display: block;
+    padding-top: 20px;
+    width: 100%;
+}
+
+
+.intro p{
+    text-align: center;
+    font-size: 40px;
+    margin: 100px 0px 50px 0px;
+}
+
+/*News*/
+.section1 {
+    width: calc((100% - 30px) / 2);
+    box-sizing: border-box;
+    margin-bottom: 50px;
+}
+
+.main1 img{
+    padding-top: 50px;
+    width: 100%;
+}
+
+/*News Fisrt Line*/
+.first{
+    display: flex;
+    flex-wrap: wrap;
+}
+   
+.lessStuff{
+    margin-left: 30px;
+}
+
+.section1 h3{
+    line-height: 1.41em;
+    font-size: 30px;
+}
+
+.section1 p{
+    line-height: 1.51em;
+    font-size: 20px;
+    color: rgb(130,130,130);
+}
+
+/*News Second Line*/
+.second{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.eco{
+    margin-left: 30px;
+}
+
+/*More*/
+.more a:link, a:visited{
+    font-size: 23px;
+    background-color: #73bbd1;
+    color: white;
+    padding: 14px 25px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.more a:hover, a:active {
+    background-color: #9bc5d2;
+    transition: all .2s ease-out;
+}
+
+/* Animation */
+.quoteSection{
+    margin-top: 50px;
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 100%;
+    background-color:rgb(229, 228, 227);
+}
+
+.plantQuote{
+    margin-left: 150px;
+    width: 60%;
+}
+
+.plantQuote p:first-child{
+    font-family: Garamond;
+    font-size: 40px;
+}
+
+.plantQuote p:nth-child(2){
+    font-family: Helvetica;
+    font-size: 20px;
+    font-variant: small-caps;
+}
+
+.animatedPlant{
+    margin-left: 50px;
+    width: 200px;
+    height: 300px;
+    background-image: url('../pic/grow1.jpg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    animation: growingPlant 10s infinite;
+}
+
+@keyframes growingPlant {
+    0% {background-image: url('../pic/grow1.jpg');}
+    20% {background-image: url('../pic/grow2.jpg');}
+    40% {background-image: url('../pic/grow3.jpg');}
+    60% {background-image: url('../pic/grow4.jpg');}
+    80% {background-image: url('../pic/grow5.jpg');}
+    100% {background-image: url('../pic/grow1.jpg');}
+}
+
+/*Content Wrapper*/
+@media only screen and (max-width: 1024px){    
+    .intro p{
+        font-size: 30px;
+    }
+
+    .section1 h3{
+        font-size: 25px;
+    }
+
+    .section1 p{
+        font-size: 20px;
+    }
+
+    .more a:link, a:visited{
+        font-size:20px;
+        padding: 10px 20px;
+    }
+    
+    .plantQuote{
+        width: 30%;
+    }
+    
+    .plantQuote p:first-child{
+        font-size: 30px;
+    }
+}

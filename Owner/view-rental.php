@@ -1,13 +1,12 @@
 <link rel="stylesheet" href="CSS/pagination.css">
-<!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script> -->
-
+<script src="https://kit.fontawesome.com/885ec11a96.js" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <?php 
-$total_pages = $conn->query('SELECT * FROM rental_details')->num_rows;
+$total_pages = $conn->query('SELECT * FROM pending_rent')->num_rows;
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? $_GET['page'] : 1;
-$num_results_on_page = 5;
+$num_results_on_page = 9;
 
-if ($stmt = $conn->prepare('SELECT * FROM rental_details LIMIT ?,?')) {
+if ($stmt = $conn->prepare('SELECT * FROM pending_rent LIMIT ?,?')) {
 	$calc_page = ($page - 1) * $num_results_on_page;
 	$stmt->bind_param('ii', $calc_page, $num_results_on_page);
 	$stmt->execute(); 
@@ -19,7 +18,7 @@ if ($stmt = $conn->prepare('SELECT * FROM rental_details LIMIT ?,?')) {
         <div class="col-md-12">
             <div class="card border-0 bg-transparent">
                 <div class="card-header border-0">
-                    <h4 class="text-uppercase font-weight-bold">Rental Records</h4>
+                    <h4 class="text-uppercase font-weight-bold">Pending Rental</h4>
                 </div>
                 <div class="card-body bg-transparent" id="rental_table">
                     <table class="table table-bordered text-center table-sm table-responsive w-100 d-block d-md-table" id="tblRental" cellspacing="0">
@@ -29,63 +28,48 @@ if ($stmt = $conn->prepare('SELECT * FROM rental_details LIMIT ?,?')) {
                             <th scope="col">Email</th>
                             <th scope="col">Product ID</th>
                             <th scope="col">Start Date</th>
-                            <th scope="col">Tracking No.</th>
-                            <th scope="col" colspan="2">Rental Status</th>
+                            <th scope="col">End Date</th>
+                            <th scope="col">Rental Fees</th>
+                            <th scope="col">Rental Status</th>
+                            <th scope="col">Return</th>
+                            <th scope="col">Fine</th>
                         </thead>
                         <tbody>
-                            <?php while ($item = $result->fetch_assoc()): 
-                            $rentId = $item['rental_id'];
-                            $find_prod = $conn->query("SELECT * FROM pending_rent WHERE rentId = '$rentId'");
-                            $prod_item = $find_prod->fetch_assoc();
-                            
-                            if($item['rental_status'] == "Pending Delivery") { ?>
-                                <tr class="table-warning">
-                            <?php } elseif($item['rental_status'] == "Delivering") { ?> 
-                                <tr class="table-info">
-                            <?php } elseif($item['rental_status'] == "Received") { ?> 
-                                <tr class="table-success">
-                            <?php } elseif($item['rental_status'] == "Pending Return") { ?> 
-                                <tr class="table-light">
-                            <?php } elseif($item['rental_status'] == "Returned") { ?> 
-                                <tr class="table-secondary">
-                            <?php } else { ?>
+                            <?php $i = 1;
+                            while ($item = $result->fetch_assoc()): ?>
                                 <tr>
-                            <?php } ?>
-                                    <td><?php echo $item['no'];?></td>
-                                    <td><?php echo $item['rental_id'];?></td>
+                                    <td><?php echo $i; ?></td>
+                                    <td><?php echo $item['rentId'];?></td>
                                     <td><?php echo $item['email'];?></td>
-                                    <td><?php echo $prod_item['prodId'];?></td>
-                                    <td><?php echo $prod_item['startDate'];?></td>
-                                    <td><?php echo $item['tracking_no'];?></td>
-                                    <form class="col-md" action="process/rental.php" method="POST">
-                                        <td class="col-sm-2">
-                                            <input type="hidden" id="rental_id" name="rental_id" value="<?php echo $item['rental_id'];?>">
-                                            <input type="hidden" id="rental_status" name="rental_status" value="<?php echo $item['rental_status'];?>">
-                                            <!-- <select class="form-control" name="rental_status" id="rental_status">
-                                                <option value="Pending Delivery" selected>Please select status</option>
-                                                <option value="Delivering">Delivering</option>
-                                                <option value="Received">Received</option>
-                                                <option value="Pending Return">Pending Return</option>
-                                                <option value="Returned">Returned</option>
-                                            </select> -->
-                                            <span class="badge badge-primary"><?php echo $item['rental_status'];?></span>
-                                        </td>
-                                        <td class="col-sm-1">
-                                            <?php if($item['rental_status'] == "Returned") { ?>
-                                                <button disabled type="submit" class="btn btn-primary btn-sm" id="btnConfirm" name="btnConfirm">Proceed</button>
-                                            <?php } else { ?>
-                                                <button type="submit" class="btn btn-primary btn-sm" id="btnConfirm" name="btnConfirm">Proceed</button>
-                                            <?php } ?>
-                                        </td>
-                                    </form>
-                                    <!-- <td class="col-sm-1">
-                                        <form class="col-md" action="process/rental.php" method="POST">
-                                            <input type="hidden" id="rental_id" name="rental_id" value="<?php echo $item['rental_id'];?>">
-                                            <button type="submit" class="btn btn-danger btn-sm" id="btnReturn" name="btnReturn">Return Product</button>
-                                        </form>
-                                    </td> -->
+                                    <td><?php echo $item['prodId'];?></td>
+                                    <td><?php echo $item['startDate'];?></td>
+                                    <td><?php echo $item['endDate'];?></td>
+                                    <td><?php echo $item['rentFees'];?></td>
+                                    <?php if($item['status'] == "Pending") { ?>
+                                        <td><span class="badge badge-primary"><?php echo $item['status'];?></span></td>
+                                    <?php } elseif($item['status'] == "Pending Fine") {  ?>
+                                        <td><span class="badge badge-warning"><?php echo $item['status'];?></span></td>
+                                    <?php } elseif($item['status'] == "Cancelled") {  ?>
+                                        <td><span class="badge badge-danger"><?php echo $item['status'];?></span></td>
+                                    <?php } elseif($item['status'] == "Completed") {  ?>
+                                        <td><span class="badge badge-success"><?php echo $item['status'];?></span></td>
+                                    <?php } else {  ?>
+                                        <td><span class="badge badge-secondary"><?php echo $item['status'];?></span></td>
+                                    <?php }?>
+
+                                    <?php if($item['returnId'] != "") { ?>
+                                        <td><i class="fa fa-check" aria-hidden="true"></i></td>
+                                    <?php } else { ?>
+                                        <td><i class="fa fa-xmark" aria-hidden="true"></i></td>
+                                    <?php } ?>
+
+                                    <?php if($item['fineId'] != "") { ?>
+                                        <td><i class="fa fa-check" aria-hidden="true"></i></td>
+                                    <?php } else { ?>
+                                        <td><i class="fa fa-xmark" aria-hidden="true"></i></td>
+                                    <?php } ?>
                                 </tr>
-                            <?php endwhile; ?>
+                            <?php $i++; endwhile; ?>
                         </tbody>
                     </table>
                     <?php if (ceil($total_pages / $num_results_on_page) > 0): ?>

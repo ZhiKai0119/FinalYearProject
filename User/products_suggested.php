@@ -72,12 +72,6 @@ $get_prod = $conn->query("SELECT * FROM products WHERE status = 1 ORDER BY RAND(
                     getReservedDate(obj.rentDate);
                     $('#origFees').val(obj.rentalPrice);
                     prodPrice = obj.prodPrice;
-                    calDeposit = (prodPrice * 0.10).toFixed(2);
-                    if (calDeposit >= 100) {
-                        $('#deposit').val();
-                    } else {
-                        $('#deposit').val(calDeposit);
-                    }
                     changeRange();
                 }
             });

@@ -4,4 +4,10 @@ function redirect($url, $message) {
     header('Location: '.$url);
     exit();
 }
+
+function errorRedirect($url, $message) {
+    setcookie("failureStatus", $message, time()+1, "/", NULL);
+    header('Location: '.$url);
+    exit();
+}
 ?>

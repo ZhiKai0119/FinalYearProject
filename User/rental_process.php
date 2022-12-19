@@ -3,7 +3,7 @@
 <script src="https://www.paypal.com/sdk/js?client-id=AdSkztRu2j-BUhPEP869O0jnt--TP2guml7TnkOcSeVfJ_5p1cxWKQ0Z1MoJSVPI2lnkFUvLc3Z_pWN6&currency=MYR"></script>
 <!-- <a class="btn btn-primary m-3" data-bs-toggle="modal" href="#exampleModalToggle" role="button">Proceed</a> -->
 
-<div class="modal fade" id="rentalProcess" data-bs-backdrop="static" aria-hidden="true" aria-labelledby="rentalProcessLabel" tabindex="-1">
+<!-- <div class="modal fade" id="rentalProcess" data-bs-backdrop="static" aria-hidden="true" aria-labelledby="rentalProcessLabel" tabindex="-1">
   <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header bg-primary">
@@ -78,7 +78,7 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
 
 <div class="modal fade" id="deliveryAdd" data-bs-backdrop="static" aria-hidden="true" aria-labelledby="deliveryAddlabel" tabindex="-1">
   <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
@@ -88,7 +88,7 @@
         <button type="button" class="btn-close" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-
+        <input type="hidden" class="form-control-plaintext ml-3" id="email" name="email">
         <div class="form-group row">
           <h6 class="col-2 col-form-label">Address ID:</h6>
           <div class="col">
@@ -111,7 +111,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-primary" data-bs-target="#rentalProcess" data-bs-toggle="modal" data-bs-dismiss="modal">Previous</button>
+        <!-- <button class="btn btn-primary" data-bs-target="#rentalProcess" data-bs-toggle="modal" data-bs-dismiss="modal">Previous</button> -->
         <button class="btn btn-primary m-1" data-bs-toggle="modal" onclick="validateAdd()">Next</button>
         <!-- data-bs-target="#payment" data-bs-toggle="modal" data-bs-dismiss="modal"  -->
       </div>
@@ -127,13 +127,33 @@
         <button type="button" class="btn-close" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        
         <div class="row">
-          <div class="col-md-6">
+          <div class="col-md-7">
             <div id="pay_info"></div>
+
+            <div class="row">
+              <div class="col-5">
+                <div class="form-group row">
+                  <h6 class="col-4 col-form-label">Rent ID: </h6>
+                  <div class="col-sm">
+                      <input type="text" readonly class="form-control-plaintext input-sm" id="rentId" name="rentId">
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-7">
+                <div class="form-group row">
+                  <h6 class="col-5 col-form-label">Total Price(RM): </h6>
+                  <div class="col-sm">
+                      <input type="text" readonly class="form-control-plaintext" id="totalPrice" name="totalPrice" value="0.00">
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div class="form-group row">
-              <h6 class="col-3 col-form-label">Payment Method ID:</h6>
-              <div class="col">
+              <h6 class="col-4 col-form-label">Card ID:</h6>
+              <div class="col-sm">
                 <select class="form-select" name="methodId" id="methodId" onchange="showPayMthId()">
                   <option value="none" selected>-- Please Select A Card --</option>
                 </select>
@@ -202,7 +222,7 @@
               </div>
             </div>
           </div>
-          <div class="col-md-6">
+          <div class="col-md-5">
             <h3 class="text-center text-dark">Other Payment Method: </h3>
             <hr>
             <div id="paypal-button-container"></div>
@@ -464,7 +484,7 @@
       return actions.order.create({
         purchase_units: [{
           amount: {
-            value: Number($('#totalPay').val()).toFixed(2)
+            value: Number($('#totalPrice').val()).toFixed(2)
           }
         }]
       });
@@ -476,7 +496,7 @@
         // alert(`Transaction ${transaction.status}: ${transaction.id}\n\nSee console for all available details`);
 
         var email = $('#email').val();
-        var totalPay = $('#totalPay').val();
+        var totalPay = $('#totalPrice').val();
         var rentId = $('#rentId').val();
         var addId = $('#addId').val();
 

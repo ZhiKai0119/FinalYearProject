@@ -8,6 +8,7 @@ require_once './config.php';
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>R&S Service - Login</title>
         <link rel="stylesheet" href="CSS/login.css">
+        <link rel="shortcut icon" href="pic/buylogo.jpg" type="image/gif">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
@@ -41,7 +42,7 @@ require_once './config.php';
                             } else if (html === 'user') {
                                 $("#add_info").html('<div class="alert alert-success"><strong>Logged In.</strong>.</div>');
                                 window.open('User/main.php','_self');
-                            } else if (html === 'owner') { 
+                            } else if (html === 'admin') { 
                                 $("#add_info").html('<div class="alert alert-success"><strong>Logged In.</strong>.</div>');
                                 window.open('Owner/main.php','_self');
                             } else {
@@ -79,9 +80,9 @@ require_once './config.php';
                         $updateLogin = $conn->query("UPDATE login SET logoutDateTime = now() WHERE id = '{$loginId}'");
                     }
                     
-                    if($userInfo["role"] == 'Owner') {
+                    if($userInfo["role"] == 'Admin') {
                         header("Location:Owner/main.php?dashboard");
-                    } else if($userInfo["role"] == 'User') {
+                    } else if($userInfo["role"] == 'Customer') {
                         header("Location:User/main.php");
                     } else {
                         header("Location:User/main.php");

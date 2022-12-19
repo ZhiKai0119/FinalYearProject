@@ -23,22 +23,6 @@
                         </div>
                     </div>
 
-                    <!-- <div class="form-group row mb-3">
-                        <h6 class="col-sm-5 col-form-label">Date Range</h6>
-                        <div class="col-sm input-daterange input-group" id="datepicker">
-                            <input type="text" class="input-sm form-control" id="startDate" name="startDate">
-                            <span class="input-group-text" id="addon-wrapping">TO</span>
-                            <input type="text" class="input-sm form-control" id="endDate" name="endDate" onchange="calculateDate()">
-                        </div>
-                    </div>
-
-                    <div class="form-group row mb-3">
-                        <h6 class="col-sm-5 col-form-label">Day(s)</h6>
-                        <div class="col-sm">
-                            <input type="text" readonly class="form-control-plaintext mb-1" id="rentDay" name="rentDay" value="0">
-                        </div>
-                    </div> -->
-
                     <div class="form-group row mb-3">
                         <h6 class="col-sm-5 col-form-label">Date</h6>
                         <div class="col-sm input-group date" data-provide="datepicker">
@@ -76,25 +60,18 @@
                         </div>
                     </div>
 
+                    <!-- <div class="form-group row mb-3">
+                        <h6 class="col-sm-5 col-form-label">Day(s)</h6>
+                        <div class="col-sm">
+                            <input type="text" readonly class="form-control-plaintext mb-1" id="rentDay" name="rentDay" value="0">
+                        </div>
+                    </div> -->
+
                     <div class="form-group row mb-3">
                         <h6 class="col-sm-5 col-form-label">Rental Fees (RM)</h6>
                         <div class="col-sm">
                             <input type="hidden" readonly class="form-control-plaintext" id="origFees" name="origFees">
                             <input type="text" readonly class="form-control-plaintext" id="rentFees" name="rentFees" value="0.00">
-                        </div>
-                    </div>
-
-                    <div class="form-group row mb-3">
-                        <h6 class="col-sm-5 col-form-label">Rental Deposit (RM)</h6>
-                        <div class="col-sm">
-                            <input type="text" readonly class="form-control-plaintext mb-1" id="deposit" name="deposit" value="100.00">
-                        </div>
-                    </div>
-
-                    <div class="form-group row mb-3">
-                        <h6 class="col-sm-5 col-form-label">Total Fees (RM)</h6>
-                        <div class="col-sm">
-                            <input type="text" readonly class="form-control-plaintext mb-1" id="totalFees" name="totalFees" value="0.00">
                         </div>
                     </div>
                 </div>
@@ -108,31 +85,30 @@
     </div>
 </div>
 
-<div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="filterProd" aria-labelledby="filterProdLabel">
+<div class="offcanvas offcanvas-end bg-dark text-light" data-bs-scroll="true" tabindex="-1" id="filterProd" aria-labelledby="filterProdLabel">
     <div class="offcanvas-header">
         <h5 class="offcanvas-title" id="filterProdLabel">Products Filtering</h5>
         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body">
-            <div class="input-group rounded">
-                <input type="search" class="form-control rounded" name="keywords" id="keywords" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
-                <span class="input-group-text border-0" id="search-addon">
-                    <button type="button" class="btn shadow-none" id="btn-search"><i class="fas fa-search"></i></button>
-                </span>
-                <div class="list-group list-group-item-action" id="content"></div>
+        <div class="input-group rounded">
+            <input type="search" class="form-control input-sm rounded" name="keywords" id="keywords" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
+            <span class="input-group-text border-0" id="search-addon">
+                <button type="button" class="btn shadow-none" id="btn-search"><i class="fas fa-search"></i></button>
+            </span>
+            <div class="list-group list-group-item-action" id="content"></div>
         </div>
-        <p>Try scrolling the rest of the page to see this option in action.</p>
         <div class="form-group row mb-3">
             <h6 class="col-form-label">Date Range</h6>
             <div class="col-sm input-daterange input-group" id="datepicker">
-                <input type="text" class="input-sm form-control" id="startDate" name="startDate">
+                <input type="text" class="input-sm form-control" id="rangeStartDate" name="startDate" autocomplete="off">
                 <span class="input-group-text" id="addon-wrapping">TO</span>
-                <input type="text" class="input-sm form-control" id="endDate" name="endDate" onchange="calculateDate()">
+                <input type="text" class="input-sm form-control" id="rangeEndDate" name="endDate" autocomplete="off">
             </div>
         </div>
         <div class="form-group row mb-3">
-            <button type="button" class="btn btn-secondary btn-sm mb-2">Filter</button>
-            <button type="button" class="btn btn-primary btn-sm" id="btnClear" name="btnClear">Clear Filter</button>
+            <button type="button" class="btn btn-secondary btn-sm mb-2 mx-3 col-md-11" id="btnFilter">Filter Date</button>
+            <button type="button" class="btn btn-primary btn-sm mx-3 col-md-11" id="btnClear" name="btnClear">Clear Filter</button>
         </div>
     </div>
 </div>
@@ -190,14 +166,13 @@
         if (mm < 10) mm = '0' + mm;
         const formattedToday = yyyy + '-' + mm + '-' + dd;
 
-        //TODO need to fixed some bugs, can run
         $('.date').datepicker({
             format: "yyyy-mm-dd",
             startDate: "0d",
-            endDate: "+60d",
             clearBtn: true,
             autoclose: true,
-            todayBtn: "linked"
+            todayBtn: "linked",
+            todayHighlight: true
         });
 
         setDisable();
@@ -252,26 +227,10 @@
         }
     }
 
-    // Date.prototype.addDays = function (days) {
-    //     const date = new Date(this.valueOf())
-    //     date.setDate(date.getDate() + days)
-    //     return date
-    // }
-    
     function calculateDate() {
-        // date1 = new Date($("#startDate").datepicker("getDate"));
-        // date2 = new Date($("#endDate").datepicker("getDate"));
         range = Number($('#range').val());
         totalDays = range * days;
         $('#rentDay').val(totalDays);
-
-        // diffTime = date2.getTime() - date1.getTime();
-        // diffDays = diffTime / (1000*3600*24);
-        // if(diffDays == 0) {
-        //     $('#rentDay').val(1);
-        // } else {
-        //     $('#rentDay').val(diffDays);
-        // }
         
         //Calculate the fees based on rent days
         origFees = $('#origFees').val();
@@ -285,18 +244,9 @@
         dateFormat = `${year}-${month}-${day}`
         $('#endDate').val(dateFormat);
 
-        //TODO: REMOVE TESTING
-        console.log(addDays({date: date1, days: totalDays}));
-        console.log(dateFormat);
-
         rentFees = parseFloat(origFees * rentDays).toFixed(2);
         discountFees = rentFees - (rentFees * discount);
         $('#rentFees').val(discountFees);
-
-        //Calculate the total number of rented
-        deposit = Number($('#deposit').val());
-        totalFees = parseFloat(Number(discountFees) + deposit).toFixed(2);
-        $('#totalFees').val(totalFees);
     }
 
     const addDays = ({date, days}) => {
@@ -321,14 +271,12 @@
             range = $('#range').val();
             rentDay = $('#rentDay').val();
             rentFees = $('#rentFees').val();
-            deposit = $('#deposit').val();
-            totalFees = $('#totalFees').val();
 
             $.ajax({
                 type: "POST",
                 url: "../process/user.php",
                 data: "rentalConfirmed" + "&email=" + email + "&prodId=" + prodId + "&startDate=" + startDate + "&endDate=" + endDate + "&rentPeriod=" + rentPeriod + "&range=" + range + 
-                "&rentDay=" + rentDay + "&rentFees=" + rentFees + "&deposit=" + deposit + "&totalFees=" + totalFees,
+                "&rentDay=" + rentDay + "&rentFees=" + rentFees,
                 success: function (html) {
                     if(html == "true") {
                         redirect("Please go to make payment.");
@@ -341,18 +289,24 @@
             });
             return false;
         });
-    });
 
-    $('#rentDetail').on('hidden.bs.modal', function () {
-        // $(this).find('form').trigger('reset');
-        // $('.date').datepicker('clearDates');
-        // $("#rent_info").textContent = '';
-        location.reload();
-    })
+        $('#btnFilter').click(function() {
+            date1 = $("#rangeStartDate").val();
+            date2 = $("#rangeEndDate").val();
 
-    $(document).ready(function() {
+            if(date1 != "" || date2 != "") {
+                window.location.href = "./display.php?startDate=" + date1 + "&endDate=" + date2;
+            } else {
+                alert("Please provide date range.");
+            }
+        });
+
         $('#btnClear').click(function() {
             window.location.href="./products.php";
         });
     });
+
+    $('#rentDetail').on('hidden.bs.modal', function () {
+        location.reload();
+    })
 </script>

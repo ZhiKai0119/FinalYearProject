@@ -99,18 +99,12 @@ if(isset($_GET['prodId'])) {
             prodId = "<?php echo $data['prodId']; ?>";
             origFees = "<?php echo round($data['rental_price'],2); ?>";
             prodPrice = "<?php echo round($data['prodPrice'],2); ?>";
-            calDeposit = (prodPrice * 0.10).toFixed(2);
 
             $('#rentDetail').modal('show');
             $('#email').val(email);
             $('#prodId').val(prodId);
             getReservedDate(dateArr);
             $('#origFees').val(origFees);
-            if (calDeposit >= 100) {
-                $('#deposit').val();
-            } else {
-                $('#deposit').val(calDeposit);
-            }
             changeRange();
         });
     });

@@ -1,0 +1,77 @@
+html {
+    zoom: 0.75;
+}
+
+body{
+    background-color: rgb(232, 237, 242) !important;
+    font-family: "Georgia", sans-serif; 
+    margin: 0 auto;
+    width: 100%;
+}
+
+nav {
+    height: 60px;
+}
+
+.topnav {
+    font-family: Lucida Bright, sans-serif;
+    overflow: hidden;
+    position: absolute;
+    color: black;
+}
+
+.topnav #myLinks {
+    display: none;
+}
+
+.active{
+    font-size: 30px;
+    padding: 14px 16px 14px 65px;
+    float: right;
+    color: black;
+}
+
+.active:hover{
+    color: black;
+    text-decoration: none;
+}
+
+.func{
+    font-size: 25px;
+    padding: 20px 16px 14px 20px;
+    color: black;
+    background-color: white;
+}
+
+.func:hover{
+    color: #4158ca;
+    text-decoration: underline;
+    transition: all .3s ease-out;
+}
+
+.topnav a {
+    text-decoration: none;
+    display: block;
+}
+
+.topnav a.icon {
+    font-size: 30px;
+    padding: 14px 16px;
+    display: block;
+    position: absolute;
+    background-color: white;
+    color: black;
+}
+
+/*Content Wrapper*/
+.content-wrapper{
+    margin: 80px auto;
+    padding: 0 50px;
+    max-width: 1200px;
+}
+
+@media only screen and (max-width: 1024px){
+    .content-wrapper{
+        max-width: 100%;
+    }
+}

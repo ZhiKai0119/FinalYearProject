@@ -40,10 +40,9 @@ if(isset($_POST['add_product_btn'])) {
         move_uploaded_file($_FILES['image']['tmp_name'], $path.'/'.$filename);
         redirect("../main.php?add-product", "Product Added Successfully");
     } else {
-        redirect("../main.php?add-product", "Something Went Wrong");
+        errorRedirect("../main.php?add-product", "Something Went Wrong");
     }
-}
-else if(isset($_POST['edit_product_btn'])) {
+} else if(isset($_POST['edit_product_btn'])) {
     $product_id = $_POST['product_id'];
     $category_id = $_POST['category_id']; 
     
@@ -83,21 +82,13 @@ else if(isset($_POST['edit_product_btn'])) {
         }
         redirect("../main.php?edit-product&id=$product_id", "Product Updated Successfully");
     } else {
-        redirect("../main.php?edit-product&id=$product_id", "Something Went Wrong");
+        errorRedirect("../main.php?edit-product&id=$product_id", "Something Went Wrong");
     }
 } 
 else if(isset($_POST['delete_product_btn'])) {
-    $product_id = mysqli_real_escape_string($conn, $_POST['product_id']);
-    
-    $product_query = $conn->query("SELECT * FROM products WHERE prodId='$product_id'");
-    $product_data = mysqli_fetch_array($product_query);
-    $image = $product_data['image'];
-    
-    $delete_query = $conn->query("DELETE FROM products WHERE prodId='$product_id'");
+    $product_id = mysqli_real_escape_string($conn, $_POST['product_id']);    
+    $delete_query = $conn->query("UPDATE products SET Activated = '0' WHERE prodId='$product_id'");
     if($delete_query) {
-        if(file_exists("../Images/".$image)) {
-            unlink("../Images/".$image);
-        }
         echo "success";
     } else {
         echo "error";
@@ -130,7 +121,7 @@ else if(isset($_POST['create_donation_btn'])) {
         if($donate) {
             header("Location: ../main.php?edit-donation&id=$product_id");
         } else {
-            redirect("../main.php?add_donation", "Something Went Wrong");
+            errorRedirect("../main.php?add_donation", "Something Went Wrong");
         }
     }
 }
@@ -147,10 +138,10 @@ else if(isset ($_POST['update_donation_btn'])) {
         if($update_product) {
             redirect("../main.php?donate", "Product had been donated!");
         } else {
-            redirect("../main.php?edit-donation&id=$product_id", "Something Went Wrong");
+            errorRedirect("../main.php?edit-donation&id=$product_id", "Something Went Wrong");
         }
     } else {
-        redirect("../main.php?edit-donation&id=$product_id", "Something Went Wrong");
+        errorRedirect("../main.php?edit-donation&id=$product_id", "Something Went Wrong");
     }
 }
 else {
