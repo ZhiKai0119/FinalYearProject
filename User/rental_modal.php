@@ -27,7 +27,7 @@
                         <h6 class="col-sm-5 col-form-label">Date</h6>
                         <div class="col-sm input-group date" data-provide="datepicker">
                             <span class="input-group-text" id="addon-wrapping"><i class="fa fa-calendar" aria-hidden="true"></i></span>
-                            <input type="text" class="input-sm form-control" id="startDate" name="startDate" onchange="setDisable(); calculateDate();">
+                            <input type="text" class="input-sm form-control" id="startDate" name="startDate" onchange="setDisable(); calculateDate(); checkItemRented();" autocomplete="off">
                             <input type="hidden" name="endDate" id="endDate">
                             <div class="input-group-addon">
                                 <span class="glyphicon glyphicon-th"></span>
@@ -152,6 +152,19 @@
             days = 0;
         }
         calculateDate();
+    }
+
+    async function checkItemRented(){
+        const prodID = document.getElementById('prodId');
+        
+        let url = `process/ajaxCheckItemRent.php?prodID=${prodID}`;
+        let response = await fetch(url).then(response => response.json());
+
+        
+
+        // if(response != 'no item'){
+        //     console.log(response);
+        // }
     }
 
     function getReservedDate(dates) { 
