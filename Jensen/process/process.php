@@ -1,20 +1,62 @@
 <?php 
-include '../config/db.php';
+include '../config/constant.php';
 
 if(isset($_POST['checkVoucher'])) {
-    $grand_total = $_POST['grand_total'];
+    $total = $_POST['total'];
     $redeemCode = $_POST['redeemCode'];
 
     $check_voucher = $conn->query("SELECT * FROM sell_voucher WHERE redeemCode = '$redeemCode'");
     $data = $check_voucher->fetch_assoc();
-    if($grand_total > $data['minSpend']) {
+    if($total > $data['minSpend']) {
         $value = $data['voucher_value'];
-        
         echo $value;
     } else {
         echo "0.00";
     }
-} else {
+} elseif(isset($_POST['makePayment'])) {
+    $query = "SELECT * FROM receiver_details ORDER BY receiverId desc LIMIT 1";
+    $result = mysqli_query($conn, $query);
+    $row = mysqli_fetch_array($result);
+    $lastId = $row['receiverId'];
+    if($lastId == "") {
+        $receiverId = "RE5001";
+    } else {
+        $receiverId = substr($lastId, 2);
+        $receiverId = intval($receiverId);
+        $receiverId = "RE".($receiverId + 1);
+    }
+
+    $email = $_POST['email'];
+    $cartId = $_POST['cartId'];
+    $total = $_POST['total'];
+    $payment_mode = $_POST['payment_mode'];
+    $payment_id = $_POST['payment_id'];
+
+    $address = $_POST['address'];
+    $city = $_POST['city'];
+    $state = $_POST['state'];
+    $zip = $_POST['zip'];
+    $country = $_POST['country'];
+    $rName = $_POST['rName'];
+    $phone = $_POST['phone'];
+
+    $payment = $conn->query("INSERT INTO payments (payment_id, payer_email, amount, currency, payment_mode, payment_status) VALUES ('$payment_id', '$email', '$total', 'MYR', '$payment_mode', 'Successful')");
+    $receiver = $conn->query("INSERT INTO receiver_details (receiverId, email, address, city, state, zip, country, receiver_name, phone) VALUES ('$receiverId', '$email', '$address', '$city', '$state', '$zip', '$country', '$rName', '$phone')");
+    if($payment && $receiver) {
+        $tracking_no = uniqid('TRACK');
+        $cart = $conn->query("UPDATE cart SET status = 'Done' WHERE cartId = '$cartId'");
+        $order_details = $conn->query("INSERT INTO order_details (cartId, payment_id, email, receiver_id, tracking_no, status) VALUES ('$cartId', '$payment_id', '$email', '$receiverId', '$tracking_no', 'Pending Delivery')");
+        if($cart && $order_details) {
+            echo "success";
+        } else {
+            echo "error";
+        }
+    } else {
+        echo "error";
+    }
+}
+
+else {
     echo "error";
 }
 ?>

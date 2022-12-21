@@ -24,7 +24,7 @@
             </div>
         </div>
         <?php include './Partials/nav.php';?>
-        <?php include './process/verify.php';?>
+        <?php // include './process/verify.php';?>
         
 <!--  auto slideshow  -->
         <div id="carousel" class="carousel slide" data-ride="carousel">

@@ -3,12 +3,12 @@
         //Connect to database
     public $hostname = "localhost";
     public $username = "root";
-    public $password = "root";
+    public $password = "";
     public $database = "r&s";
     public $conn;
         
     function __construct(){
-        $conn = mysqli_connect($this->hostname, $this->username, $this->password, $this->database);
+        $this->conn = mysqli_connect($this->hostname, $this->username, $this->password, $this->database);
     }
 
     function selectQuery($query){

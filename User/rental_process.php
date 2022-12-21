@@ -440,7 +440,7 @@
     $('#makePay').click(function() {
       var email = $('#email').val();
       var tac = $('#tac').val();
-      var totalPay = $('#totalPay').val();
+      var totalPay = $('#totalPrice').val();
       var rentId = $('#rentId').val();
       var addId = $('#addId').val();
 

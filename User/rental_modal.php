@@ -24,10 +24,17 @@
                     </div>
 
                     <div class="form-group row mb-3">
+                        <h6 class="col-sm-5 col-form-label">Price/Day (RM)</h6>
+                        <div class="col-sm">
+                            <input type="text" readonly class="form-control-plaintext mb-1" id="rentPrice" name="rentPrice" value="0.00">
+                        </div>
+                    </div>
+
+                    <div class="form-group row mb-3">
                         <h6 class="col-sm-5 col-form-label">Date</h6>
                         <div class="col-sm input-group date" data-provide="datepicker">
                             <span class="input-group-text" id="addon-wrapping"><i class="fa fa-calendar" aria-hidden="true"></i></span>
-                            <input type="text" class="input-sm form-control" id="startDate" name="startDate" onchange="setDisable(); calculateDate(); checkItemRented();" autocomplete="off">
+                            <input type="text" class="input-sm form-control" id="startDate" name="startDate" onchange="setDisable(); calculateDate(); checkItemRented(this);" autocomplete="off">
                             <input type="hidden" name="endDate" id="endDate">
                             <div class="input-group-addon">
                                 <span class="glyphicon glyphicon-th"></span>
@@ -60,18 +67,12 @@
                         </div>
                     </div>
 
-                    <!-- <div class="form-group row mb-3">
-                        <h6 class="col-sm-5 col-form-label">Day(s)</h6>
-                        <div class="col-sm">
-                            <input type="text" readonly class="form-control-plaintext mb-1" id="rentDay" name="rentDay" value="0">
-                        </div>
-                    </div> -->
-
                     <div class="form-group row mb-3">
                         <h6 class="col-sm-5 col-form-label">Rental Fees (RM)</h6>
-                        <div class="col-sm">
+                        <div class="col-sm d-flex d-inline">
                             <input type="hidden" readonly class="form-control-plaintext" id="origFees" name="origFees">
                             <input type="text" readonly class="form-control-plaintext" id="rentFees" name="rentFees" value="0.00">
+                            <input class="form-control-plaintext text-danger text-decoration-line-through" type="text" name="origPrice" id="origPrice">
                         </div>
                     </div>
                 </div>
@@ -115,7 +116,7 @@
 
 <script>
     var dateArr = [];
-    var days, discount;
+    var days, discount, checkOrig = 'false';
     date = new Date();
 
     function changeRange() {
@@ -125,6 +126,7 @@
             $("#range").prop("selectedIndex", 0);
             days = 1;
             discount = 0;
+            checkOrig = 'false';
             $('#rentDay').val(days);
             for(i = 1; i < 7; i++) {
                 $('#range').append(new Option(i, i));
@@ -134,6 +136,7 @@
             $("#range").prop("selectedIndex", 0);
             days = 7;
             discount = 0.1;
+            checkOrig = 'true';
             $('#rentDay').val(days);
             for(i = 1; i < 4; i++) {
                 $('#range').append(new Option(i, i));
@@ -143,6 +146,7 @@
             $("#range").prop("selectedIndex", 0);
             days = 30;
             discount = 0.2;
+            checkOrig = 'true';
             $('#rentDay').val(days);
             for(i = 1; i < 7; i++) {
                 $('#range').append(new Option(i, i));
@@ -152,24 +156,90 @@
             days = 0;
         }
         calculateDate();
+        checkItemRented(document.getElementById('startDate').value, document.getElementById('rentDay').value);
     }
 
-    async function checkItemRented(){
-        const prodID = document.getElementById('prodId');
-        
-        let url = `process/ajaxCheckItemRent.php?prodID=${prodID}`;
-        let response = await fetch(url).then(response => response.json());
+    // async function checkItemRented(chooseDate){
+    //     const prodID = document.getElementById('prodId').value;
 
-        
+    //     try{
+    //         let url = `process/ajaxCheckItemRent.php?prodID=${prodID}`;
+    //         let response = await fetch(url).then(response => response.json());
+    //         let startDate = response[0]['startDate'];
+    //         let endDate = response[0]['endDate'];
 
-        // if(response != 'no item'){
-        //     console.log(response);
-        // }
+    //         let withinRange = checkValidDate(chooseDate, startDate, endDate);
+
+    //         if(withinRange){
+    //             alert('Not available');
+    //             document.getElementById('startDate').value = '';
+    //         }
+
+    //     }catch(err){
+    //         console.log('error', err);
+    //     }
+    // }
+
+    // function checkValidDate(chooseDate, startDate, endDate){
+    //     let newChooseDate = new Date(chooseDate).getTime();
+    //     let newStartDate = new Date(startDate).getTime();
+    //     let newEndDate = new Date(endDate).getTime();
+    //     let withinDate = (newChooseDate >= newStartDate) && (newChooseDate <= newEndDate);
+        
+    //     return withinDate;
+    // }
+
+    async function checkItemRented(chooseDate, rentDay){
+        const prodID = document.getElementById('prodId').value;
+
+        try{
+            let url = `process/ajaxCheckItemRent.php?prodID=${prodID}`;
+            let response = await fetch(url).then(response => response.json());
+            let startDate = response[0]['startDate'];
+            let endDate = response[0]['endDate'];
+
+            let withinRange = checkValidDate(chooseDate, rentDay, startDate, endDate);
+
+            if(withinRange){
+                alert('Not available');
+                document.getElementById('startDate').value = '';
+                setDisable();
+            }
+
+        }catch(err){
+            console.log('error', err);
+        }
+    }
+
+    function checkValidDate(chooseDate, rentDay, startDate, endDate){
+        let newChooseDate = new Date(chooseDate).getTime();
+        let newStartDate = new Date(startDate).getTime();
+        let newEndDate = new Date(endDate).getTime();
+        let withinDate = (newChooseDate >= newStartDate) && (newChooseDate <= newEndDate);
+
+        var day = 60 * 60 * 24 * 1000;
+        let newDate = newChooseDate;
+
+        if(!withinDate) {
+            for(let i = 1; i < rentDay; i++) {
+                newDate += day; 
+                console.log(newDate);
+                if((newDate >= newStartDate) && (newDate <= newEndDate)) {
+                    withinDate = "true";
+                    break;
+                } else {
+                    continue;
+                }
+            }
+        }
+        
+        
+        return withinDate;
     }
 
     function getReservedDate(dates) { 
-        const arr = Object.values(dates);
-        dateArr = arr;
+        // const arr = Object.values(dates);
+        // dateArr = arr;
 
         var today = new Date();
         const yyyy = today.getFullYear();
@@ -189,51 +259,19 @@
         });
 
         setDisable();
-
-        if(arr.length != 0) {
-        //     for(i = 0; i < arr.length; i++) {
-        //         if(arr[i] == formattedToday) {
-        //             $('.input-daterange').datepicker({
-        //                 format: "yyyy-mm-dd",
-        //                 startDate: "0d",
-        //                 endDate: "+60d",
-        //                 clearBtn: true,
-        //                 autoclose: true,
-        //                 datesDisabled: dates
-        //             });
-        //             break;
-        //         } else {
-        //             $('.input-daterange').datepicker({
-        //                 format: "yyyy-mm-dd",
-        //                 startDate: "0d",
-        //                 endDate: "+60d",
-        //                 todayBtn: "linked",
-        //                 clearBtn: true,
-        //                 autoclose: true,
-        //                 todayHighlight: true,
-        //                 datesDisabled: dates
-        //             });
-        //         }
-        //     }
-        // } else {
-        //     $('.input-daterange').datepicker({
-        //         format: "yyyy-mm-dd",
-        //         startDate: "0d",
-        //         endDate: "+60d",
-        //         todayBtn: "linked",
-        //         clearBtn: true,
-        //         autoclose: true,
-        //         todayHighlight: true,
-        //         datesDisabled: dates
-        //     });
-        }
-        
     }
 
     function setDisable() {
         if($('#startDate').val() == "") {
+            var rentPeriod = document.getElementById('rentPeriod');
+            var range = document.getElementById('range');
+
             $('#rentPeriod').prop('disabled', true);
+            rentPeriod.selectedIndex = 0;
             $('#range').prop('disabled', true);
+            range.selectedIndex = 0;
+            changeRange();
+            $('#origPrice').val("");
         } else {
             $('#rentPeriod').prop('disabled', false);
             $('#range').prop('disabled', false);
@@ -258,8 +296,13 @@
         $('#endDate').val(dateFormat);
 
         rentFees = parseFloat(origFees * rentDays).toFixed(2);
+        if(checkOrig == 'true') {
+            $('#origPrice').val(rentFees);
+        }
         discountFees = rentFees - (rentFees * discount);
         $('#rentFees').val(discountFees);
+
+        checkItemRented(document.getElementById('startDate').value, document.getElementById('rentDay').value);
     }
 
     const addDays = ({date, days}) => {

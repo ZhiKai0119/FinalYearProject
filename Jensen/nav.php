@@ -1,4 +1,33 @@
-<?php include './config/constant.php'; ?>
+<?php 
+include './config/constant.php'; 
+
+if (isset($_COOKIE["id"]) && isset($_COOKIE["token"])) {
+    $sql = "SELECT * FROM users WHERE token='{$_COOKIE["token"]}'";
+    $result = mysqli_query($conn, $sql);
+    $userInfo = mysqli_fetch_assoc($result);
+    $email = $userInfo['email'];
+    $fullName = $userInfo['fullName'];
+    $picture = '<img class="rounded-circle" src="../Images/'. $userInfo['picture'] .'" alt="" width="25px" height="25px" style="margin-bottom: 3px;">';
+    
+    $dropItem1 = '<a class="dropdown-item" href="./userProfile.php">Profile</a>';
+    $dropItem2 = '<a class="dropdown-item" href="../logout.php">Logout</a>';
+
+    $count_cart = $conn->query("SELECT * FROM cart WHERE email = '$email' AND status = 'Pending'");
+    if(mysqli_num_rows($count_cart) > 0) {
+        $rows = mysqli_num_rows($count_cart);
+    } else {
+        $rows = "";
+    }
+} else {
+    $fullName = "Profile";
+    $picture = '<i class="fa fa-user-circle"></i>';
+    //$picture = '<img class="rounded-circle" src="../Images/profile.png" alt="" width="25px" height="25px" style="margin-bottom: 3px;">';
+    $dropItem1 = '<a class="dropdown-item" href="../index.php">Login</a>';
+    $dropItem2 = '<a class="dropdown-item" href="../registration.php">Sign Up</a>';
+    $rows = "";
+    $fine = "";
+}
+?>
 
 <!DOCTYPE html>
 <!--<html>-->
@@ -20,9 +49,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-
-    <!--        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">-->
-    <!--        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">-->
 
     <!--Alertify Js-->
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
@@ -53,16 +79,13 @@
     </button>
 
     <div class="collapse navbar-collapse" id="collapse_target">
-        <a class="navbar-brand" href="index.php">
-<!--                    <img src="#">-->
+        <a class="navbar-brand" href="home.php">
             <span class="navbar-text"><img src="./imgs/RNS_white.png" width="30px" height="30px"><span style="color: whitesmoke;"> RNS</span></span> 
-            <!--<i class="fa fa-home"></i>-->
         </a>
 
         <ul class="navbar-nav">
-
             <li class="nav-item">
-                <a class="nav-link" a href="product.php"><i class="fa fa-archive"></i> Products</a>
+                <a class="nav-link" a href="product_list.php"><i class="fa fa-archive"></i> Products</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="categories.php"><i class="fa fa-cubes"></i> Collections</a>
@@ -75,24 +98,52 @@
             </li>
 
             <!-- <li class="nav-item">
-                <a class="nav-link notification" href="pendingDelivery.php"><i class="fas fa-shipping-fast"></i> Pending Delivery <span class="badge badge-pill badge-danger"></span></a>
+                <a class="nav-link notification" href="pendingDelivery.php"><i class="fa fa-shipping-fast"></i> Pending Delivery</a>
             </li>   -->
-             <!-- <li class="nav-item">
-                <a class="nav-link notification" href="orders.php"><i class="fas fa-shopping-bag"></i> Orders History <span class="badge badge-pill badge-danger"></span></a>
-            </li> -->
-
-            <li class="nav-item">
-                <a class="nav-link" href="cart.php"><i class="fa fa-shopping-cart"></i> Cart</a>
-            </li>
              <li class="nav-item">
-                <a class="nav-link" href="logout.php"><i class="fa fa-sign-out"></i> Log out</a>
+                <a class="nav-link notification" href="order_history.php"><i class="fa fa-shopping-bag"></i> Orders History</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="shopping_cart.php"><i class="fa fa-shopping-cart"></i> Cart <span class="badge badge-pill badge-danger"><?php echo $rows; ?></span></a>
+            </li>
+        </ul>
 
-
-
-
-
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" data-target="dropdown_target" href="#" aria-haspopup="true" data-display="static">
+                    <?php echo $fullName ?> <?php echo $picture; ?>
+                    <span class="caret"></span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right bg-light" aria-labelledby="dropdown_target">
+                    <a class="dropdown-item" href="../Owner/main.php?dashboard" target="_self">Admin</a>
+                    <a class="dropdown-item" href="../User/main.php" target="_self">Rental</a>
+                    <?php echo $dropItem1; ?>
+                    <?php echo $dropItem2; ?>
+                </div>
+            </li>
         </ul>
     </div>
 </nav>
 
+<?php 
+if(isset($_GET['admin'])) {
+    $userRole = $userInfo['role'];
+    if($userRole != 'Admin') {
+        echo "<script>alert('You have not permission to access the admin page.');</script>";
+        echo "<script>window.open('http://localhost/FinalYearProject/Jensen/home.php','_self');</script>";
+    } else {
+        echo "<script>window.open('http://localhost/FinalYearProject/Owner/main.php?dashboard','_self');</script>";
+    }
+}
+?>
+
+<!--Alertify Js-->
+<script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+<script>
+    alertify.set('notifier','position', 'top-right');
+    <?php if(isset($_COOKIE['status'])) { ?>
+        alertify.success('<?php echo $_COOKIE['status']; ?>'); 
+    <?php } elseif(isset($_COOKIE['failureStatus'])) { ?>
+        alertify.error('<?php echo $_COOKIE['failureStatus']; ?>'); 
+    <?php } ?>
+</script>

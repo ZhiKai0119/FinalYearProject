@@ -24,7 +24,7 @@ and open the template in the editor.
                         success: function (html) {
                             if(html === 'true') {
                                 $("#add_info").html('<div class="alert alert-success"><strong>Success</strong> Please check your email.</div>');
-                                window.open("http://localhost/FinalYearProject/thankyou.php#", "_self");
+                                // window.open("http://localhost/FinalYearProject/thankyou.php#", "_self");
                             } else if (html === 'false') {
                                 $("#add_info").html('<div class="alert alert-danger"><strong>Error!</strong> Email send unsuccessful.</div>');
                             } else if (html === 'invalid') {

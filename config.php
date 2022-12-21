@@ -15,7 +15,7 @@ $login_url = $gClient->createAuthUrl();
 //Connect to database
 $hostname = "localhost";
 $username = "root";
-$password = "root";
+$password = "";
 $database = "r&s";
 
 $conn = mysqli_connect($hostname, $username, $password, $database);

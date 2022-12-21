@@ -105,6 +105,7 @@ if(isset($_GET['prodId'])) {
             $('#prodId').val(prodId);
             getReservedDate(dateArr);
             $('#origFees').val(origFees);
+            $('#rentPrice').val(origFees);
             changeRange();
         });
     });

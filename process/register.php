@@ -1,6 +1,9 @@
 <?php
 include '../config/constant.php';
-require '../phpmailer/PHPMailerAutoload.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require '../vendor/autoload.php';
 
 $fname = $_POST['fname'];
 $lname = $_POST['lname'];
@@ -56,8 +59,8 @@ if($fname == null || $lname == null || $email == null || $password == null || $c
                     $mail->isSMTP();
                     $mail->Host="smtp.gmail.com";
                     $mail->SMTPAuth = true;
-                    $mail->Username = "fyp.rnsservice@gmail.com";
-                    $mail->Password = 'gvwkiyvkdtlevhdc';    
+                    $mail->Username = 'lacccarrental@gmail.com';                 // SMTP username
+                    $mail->Password = 'hzfmqbwoqqisdbls';   
                     $mail->Port = 587;
                     $mail->SMTPSecure = "tls";
                 

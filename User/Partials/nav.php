@@ -145,7 +145,7 @@ if (isset($_COOKIE["id"]) && isset($_COOKIE["token"])) {
                         </a>
                         <div class="dropdown-menu dropdown-menu-right bg-light" aria-labelledby="dropdown_target">
                             <a class="dropdown-item" href="main.php?admin" target="_self">Admin</a>
-                            <a class="dropdown-item" href="comingSoon.php" target="_self">Selling</a>
+                            <a class="dropdown-item" href="../Jensen/home.php" target="_self">Selling</a>
                             <?php echo $dropItem1; ?>
                             <?php echo $dropItem2; ?>
                         </div>

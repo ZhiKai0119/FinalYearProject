@@ -147,6 +147,7 @@
                             $('#prodId').val(prodId);
                             getReservedDate(obj.rentDate);
                             $('#origFees').val(obj.rentalPrice);
+                            $('#rentPrice').val(obj.rentalPrice);
                             prodPrice = obj.prodPrice;
                             changeRange();
                         }

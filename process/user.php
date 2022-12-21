@@ -1,6 +1,9 @@
 <?php
 include '../config/constant.php';
-require '../phpmailer/PHPMailerAutoload.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require '../vendor/autoload.php';
 
 function redirect($url, $message) {
     setcookie("status", $message, time()+1, "/", NULL);
@@ -474,33 +477,34 @@ if(isset($_FILES["image"]["name"])) {
     if(mysqli_num_rows($product) > 0) {
         $prodDetail = mysqli_fetch_array($product);
 
-        $disableDate = $conn->query("SELECT * FROM pending_rent WHERE prodId = '$prodId' AND status = 'Pending'");
-        $dates_ar = [];
+        // $disableDate = $conn->query("SELECT * FROM pending_rent WHERE prodId = '$prodId' AND status = 'Pending'");
+        // $dates_ar = [];
 
-        if(mysqli_num_rows($disableDate) > 0) {
-            while ($ddate = $disableDate->fetch_array()) {
-                $begin = new DateTime($ddate['startDate']);
-                $end = new DateTime($ddate['endDate']);
-                $end = $end->modify('+1 day');
-                $interval = new DateInterval('P1D');
-                $daterange = new DatePeriod($begin, $interval, $end);
-                foreach ($daterange as $date) {
-                    $dates_ar[] = $date->format("Y-m-d");
-                }
-            }
-            $prodInfo = [
-                'rentalPrice'=>$prodDetail['rental_price'],
-                'prodPrice'=>$prodDetail['prodPrice'],
-                'rentDate'=>$dates_ar
-            ];
-        } else {
-            $dates_ar = [];
-            $prodInfo = [
-                'rentalPrice'=>$prodDetail['rental_price'],
-                'prodPrice'=>$prodDetail['prodPrice'],
-                'rentDate'=>$dates_ar
-            ];
-        }
+        // if(mysqli_num_rows($disableDate) > 0) {
+        //     while ($ddate = $disableDate->fetch_array()) {
+        //         $begin = new DateTime($ddate['startDate']);
+        //         $end = new DateTime($ddate['endDate']);
+        //         $end = $end->modify('+1 day');
+        //         $interval = new DateInterval('P1D');
+        //         $daterange = new DatePeriod($begin, $interval, $end);
+        //         foreach ($daterange as $date) {
+        //             $dates_ar[] = $date->format("Y-m-d");
+        //         }
+        //     }
+        //     $prodInfo = [
+        //         'rentalPrice'=>$prodDetail['rental_price'],
+        //         'prodPrice'=>$prodDetail['prodPrice'],
+        //         'rentDate'=>$dates_ar
+        //     ];
+        // } else {
+            
+        // }
+
+        $prodInfo = [
+            'rentalPrice'=>$prodDetail['rental_price'],
+            'prodPrice'=>$prodDetail['prodPrice']
+        ];
+
         echo json_encode($prodInfo);
     } else {
         echo "false";
@@ -629,8 +633,8 @@ if(isset($_FILES["image"]["name"])) {
         $mail->isSMTP();
         $mail->Host="smtp.gmail.com";
         $mail->SMTPAuth = true;
-        $mail->Username = "fyp.rnsservice@gmail.com";
-        $mail->Password = 'gvwkiyvkdtlevhdc';    
+        $mail->Username = 'lacccarrental@gmail.com';                 // SMTP username
+        $mail->Password = 'hzfmqbwoqqisdbls';    
         $mail->Port = 587;
         $mail->SMTPSecure = "tls";
 
@@ -676,7 +680,7 @@ if(isset($_FILES["image"]["name"])) {
         if($tac == $_COOKIE['tac']) {
             $payment_id = md5(time() . mt_rand(1, 1000000));
             $tracking_no = uniqid('TRACK');
-            $pending_rent = $conn->query("UPDATE pending_rent SET confirmRent = '1' AND status = 'Pending Return' WHERE rentId = '$rentId'");
+            $pending_rent = $conn->query("UPDATE pending_rent SET confirmRent = '1', status = 'Pending Return' WHERE rentId = '$rentId'");
             $payment = $conn->query("INSERT INTO payments (payment_id, payer_email, amount, currency, payment_mode, payment_status) VALUES ('$payment_id', '$email', '$totalPay', 'MYR', 'Card', 'Successful')");
             $rental_detail = $conn->query("INSERT INTO rental_details (rental_id, payment_id, email, address_id, tracking_no, rental_status) VALUES ('$rentId', '$payment_id', '$email', '$addId', '$tracking_no', 'Pending Delivery')");
             $loan = $conn->query("INSERT INTO loan (loanId, rentId, email, loan_status) VALUES ('$loanId', '$rentId', '$email', 'Incomplete')");

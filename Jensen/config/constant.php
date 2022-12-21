@@ -3,8 +3,8 @@
 //Connect to database
 $hostname = "localhost:3306";
 $username = "root";
-$password = "root";
-$database = "r_s";
+$password = "";
+$database = "r&s";
 
 $conn = mysqli_connect($hostname, $username, $password, $database);
 

@@ -1,32 +1,11 @@
 <link rel="stylesheet" href="./CSS/product.css"/>
-
-<?php
-session_start();
-if (!isset($_SESSION['customerID'])) {
-    echo "<h1>Warning</h1>";
-    echo "<h2>No permission allowed to access this page</h2>";
-    echo "<p>Click here to<a href=\"login.php\">Login</a></p>";
-    exit(); // Quit the script.
-}
+<?php 
 include './nav.php';
 include './config/constant.php';
-$total_pages = $conn->query('SELECT * FROM categories WHERE status = 1')->num_rows;
-$page = isset($_GET['page']) && is_numeric($_GET['page']) ? $_GET['page'] : 1;
-$num_results_on_page = 8;
 
-if ($stmt = $conn->prepare('SELECT * FROM categories WHERE status = 1 LIMIT ?,?')) {
-    $calc_page = ($page - 1) * $num_results_on_page;
-    $stmt->bind_param('ii', $calc_page, $num_results_on_page);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    ?>
-    <!--    <div class="py-1">
-            <div class="container">
-                <h6 class="text-muted">
-                    <a class="text-muted" href="main.php">Home</a> / Collections
-                </h6>
-            </div>
-        </div>-->
+$result = $conn->query('SELECT * FROM sell_category')
+?>
+
    
    <link href="./CSS/index.css" rel="stylesheet" type="text/css"/>
    
@@ -38,65 +17,20 @@ if ($stmt = $conn->prepare('SELECT * FROM categories WHERE status = 1 LIMIT ?,?'
                     <h1 class="text-center">Product Categories</h1>
                     <hr>
                     <div class="row">
-                        <div class="content-wrapper">
-                         
-                            <div class="first">
-                                <div class="section1">
-                                    <div class="conscious main1">
-                                        <a href='categories.php'><img src="./imgs/electro1.png" alt="Conscious Picture" width="500" ></a>
-                                    </div>
-                                    <p> Electronic Products</p>
-                                    <p> ELECTRONIC MAKE LIFE BETTER </p>
+                        <!-- <div class="content-wrapper"> -->
+                        <?php while($row = $result->fetch_assoc()): ?>
+                            <div class="col-md-6 mb-4">
+                                <!-- <a class="text-muted" href="product_list.php?catId=<?php echo $row['cat_id']; ?>"> -->
+                                    <img src="./Images/<?php echo $row['image']; ?>" alt="Conscious Picture" class="" height="300px">
+                                    <p> <?php echo $row['category_name']; ?></p>
                                     <div class="more">
-                                        <a href="electronic.php">View More</a>
+                                        <a href="product_list.php?catId=<?php echo $row['cat_id']; ?>">View More</a>
                                     </div>
-                                </div>
-
-                                <div class="section1 lessStuff">
-                                    <div class="main1">
-                                         <a href='categories.php'><img src="./imgs/fashion1.jpg" alt="Conscious Picture" width="500" ></a>
-                                    </div>
-                                    <p>Fashion Products</p>
-                                    <p> Fashion bring life colorful </p>
-                                    <div class="more">
-                                        <a href="fashion.php">View More</a>
-                                    </div>
-                                </div>
+                                <!-- </a> -->
                             </div>
-
-                            <div class="second">
-                                <div class="section1 trails">
-                                    <div class="main1">
-                                        <a href='categories.php'><img src="./imgs/mobile.jpg" alt="Conscious Picture" width="500" ></a>
-                                    </div>
-                                    <p>Mobile Accessories</p>
-                                    <p> Accessories make life more entertain</p>
-                                    <div class="more">
-                                        <a href="mobile.php">View More</a>
-                                    </div>
-                                </div>
-
-                                <div class="section1 eco">
-                                    <div class="main1">
-                                       <a href='categories.php'><img src="./imgs/gro.png" alt="Conscious Picture" width="500" ></a>
-                                    </div>
-                                    <p>grocery</p>
-                                    <p> Vegetables bring life greennn</p>
-                                    <div class="more">
-                                        <a href="grocery.php">View More</a>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
+                        <?php endwhile; ?>
                     </div>
                 </div>
             </div>
-            <?php
-            $stmt->close();
-        } else {
-            echo "No Category Available.";
-        }
-        ?>
         <?php include './footer.php'; ?>
         <?php include './chatbot.php'; ?>

@@ -1,5 +1,9 @@
 <?php
 include '../../config/constant.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require '../../vendor/autoload.php';
 
 $fname = $_POST['fname'];
 $email = $_POST['email'];
@@ -30,38 +34,74 @@ if (strlen($fname) > 50) {
     echo 'message_short';
 
 } else {
-    require '../../phpmailer/PHPMailerAutoload.php';
+    $mail = new PHPMailer(true);
 
-    $mail = new PHPMailer;
-	
-	//$mail->SMTPDebug = 3;                               // Enable verbose debug output
+    try {
+        // $mail->SMTPDebug = 2;
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'lacccarrental@gmail.com';                 // SMTP username
+        $mail->Password = 'hzfmqbwoqqisdbls';    
+        // $mail->Username = 'fyp.rnsservice@gmail.com';
+        // $mail->Password = 'gvwkiyvkdtlevhdc';
+        $mail->SMTPSecure = 'tsl';
+        $mail->Port = 587;
 
-    $mail->isSMTP();                                      // Set mailer to use SMTP
-    $mail->Host = 'smtp.gmail.com';  // Specify main and backup SMTP servers
-    $mail->SMTPAuth = true;                               // Enable SMTP authentication
-//    $mail->Username = 'lacccarrental@gmail.com';                 // SMTP username
-//    $mail->Password = 'hzfmqbwoqqisdbls';                           // SMTP password
-    $mail->Username = "fyp.rnsservice@gmail.com";
-    $mail->Password = 'gvwkiyvkdtlevhdc';
-    $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
-    $mail->Port = 587;                                    // TCP port to connect to
+        $mail->setFrom($email, 'RNS Service');
+        $mail->addAddress($email2);
 
-    $mail->AddReplyTo($email);
-    $mail->From = $email2;
-    $mail->FromName = $fname;
-    $mail->addAddress('fyp.rnsservice@gmail.com', 'Admin');     // Add a recipient
-
-    $mail->isHTML(true);                                  // Set email format to HTML
-
-    $mail->Subject = $subject;
-    $mail->Body = $message;
-    $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
-
-    if (!$mail->send()) {
-        echo 'Message could not be sent.';
-        echo 'Mailer Error: ' . $mail->ErrorInfo;
-    } else {
+        $mail->isHTML(true);
+        $mail->Subject = $subject;
+        $mail->Body    = $message;
+        $mail->AltBody = $message;
+        $mail->send();
         echo 'true';
+    } catch (Exception $e) {
+        echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
     }
+
+
+
+
+
+
+
+
+
+
+
+
+//     $mail = new PHPMailer(true);                         
+
+//     $mail->isSMTP();
+//     $mail->Host = 'smtp.gmail.com'; 
+//     $mail->SMTPAuth = true;     
+// //    $mail->Username = 'lacccarrental@gmail.com';                 // SMTP username
+// //    $mail->Password = 'hzfmqbwoqqisdbls';                           // SMTP password
+//     $mail->Username = "fyp.rnsservice@gmail.com";
+//     $mail->Password = 'gvwkiyvkdtlevhdc';
+//     $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
+//     $mail->Port = '25';        
+//     $mail->setFrom($email2);
+
+
+//     $mail->AddReplyTo($email);
+//     $mail->From = $email2;
+//     $mail->FromName = $fname;
+//     $mail->addAddress('fyp.rnsservice@gmail.com');     // Add a recipient
+
+//     // $mail->isHTML(true);                                  // Set email format to HTML
+
+//     $mail->Subject = $subject;
+//     $mail->Body = $message;
+//     // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+
+//     if (!$mail->send()) {
+//         echo 'Message could not be sent.';
+//         echo 'Mailer Error: ' . $mail->ErrorInfo;
+//     } else {
+//         echo 'true';
+//     }
 }
 ?>

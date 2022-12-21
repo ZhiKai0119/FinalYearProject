@@ -96,14 +96,14 @@ if(isset($_POST['add_product_btn'])) {
     }
 
     $prodCode = $_POST['product_id'];
-    $desc = $_POST['desc'];
+    $description = $_POST['description'];
     $category_id = $_POST['category_id']; 
     $status = $_POST['status']; 
     
-    $product_query = $conn -> query("UPDATE sell_product SET product_name = '$name', product_price = '$prodPrice', product_qty = '$prodQty', image = '$update_filename', description = '$desc', type = '$category_id', available = '$status' WHERE product_code = '$prodCode'");
+    $product_query = $conn -> query("UPDATE sell_product SET product_name = '$name', product_price = '$prodPrice', product_qty = '$prodQty', image = '$update_filename', description = '$description', type = '$category_id', available = '$status' WHERE product_code = '$prodCode'");
 
     if($product_query) {
-        move_uploaded_file($_FILES['image']['tmp_name'], $path.'/'.$filename);
+        move_uploaded_file($_FILES['image']['tmp_name'], $path.'/'.$update_filename);
         redirect("../../Owner/main.php?view-product", "Product Added Successfully");
     } else {
         errorRedirect("../../Owner/main.php?view-product", "Something Went Wrong");

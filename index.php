@@ -80,9 +80,9 @@ require_once './config.php';
                         $updateLogin = $conn->query("UPDATE login SET logoutDateTime = now() WHERE id = '{$loginId}'");
                     }
                     
-                    if($userInfo["role"] == 'Admin') {
-                        header("Location:Owner/main.php?dashboard");
-                    } else if($userInfo["role"] == 'Customer') {
+                    if($userInfo["role"] == 'Admin') { ?>
+                        <script>window.open("Owner/main.php?dashboard", "_self")</script>
+                    <?php } else if($userInfo["role"] == 'Customer') {
                         header("Location:User/main.php");
                     } else {
                         header("Location:User/main.php");

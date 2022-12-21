@@ -71,6 +71,7 @@ $get_prod = $conn->query("SELECT * FROM products WHERE status = 1 ORDER BY RAND(
                     $('#prodId').val(prodId);
                     getReservedDate(obj.rentDate);
                     $('#origFees').val(obj.rentalPrice);
+                    $('#rentPrice').val(obj.rentalPrice);
                     prodPrice = obj.prodPrice;
                     changeRange();
                 }

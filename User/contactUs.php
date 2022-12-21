@@ -36,6 +36,7 @@
                             } else if (html === 'message_short') {
                                 $("#add_err").html('<div class="alert alert-danger"><strong>Message</strong> must exceed 2 characters.</div>');
                             } else {
+                                alert(html);
                                 $("#add_err").html('<div class="alert alert-danger"><strong>Error</strong> processing request. Please try again.</div>');
                             }
                         },
