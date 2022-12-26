@@ -3,11 +3,11 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script> -->
 
 <?php 
-$total_pages = $conn->query('SELECT * FROM rental_details')->num_rows;
+$total_pages = $conn->query('SELECT * FROM rental_details  ORDER BY rental_id DESC')->num_rows;
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? $_GET['page'] : 1;
 $num_results_on_page = 5;
 
-if ($stmt = $conn->prepare('SELECT * FROM rental_details LIMIT ?,?')) {
+if ($stmt = $conn->prepare('SELECT * FROM rental_details  ORDER BY rental_id DESC LIMIT ?,?')) {
 	$calc_page = ($page - 1) * $num_results_on_page;
 	$stmt->bind_param('ii', $calc_page, $num_results_on_page);
 	$stmt->execute(); 

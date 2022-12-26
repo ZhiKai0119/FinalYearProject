@@ -245,6 +245,8 @@ if(isset($_FILES["image"]["name"])) {
     $postalCode = $_POST['postalCode'];
     $detailAdd = $_POST['detailAdd'];
     $labelAs = $_POST['labelAs'];
+
+    
     if($_POST['defaultAdd'] == "yes"){
         $defaultAdd = '1';
         $update_default = $conn->query("SELECT * FROM address WHERE email = '$email'");
@@ -276,10 +278,11 @@ if(isset($_FILES["image"]["name"])) {
         $returnAdd = '0';
     }
 
-    if($fullname = "" || $phoneNo = "" || $stateCity = "" || $postalCode == "" || $detailAdd == "") {
+    if(strlen($fullname) < 1 || strlen($phoneNo) < 1 || strlen($stateCity) < 1 || $postalCode == "" || $detailAdd == "") {
         echo "missing";
     } else {
-        $address_query = $conn->query("INSERT INTO address (addId, fullName, phoneNo, stateCity, postalCode, detailAdd, labelAs, defaultAdd, pickupAdd, returnAdd, email, available) VALUES ('$addId', '$fullname', '$phoneNo', '$stateCity', '$postalCode', '$detailAdd', '$labelAs', '$defaultAdd', '$pickupAdd', '$returnAdd', '$email', '1')");
+        $address_query = $conn->query("INSERT INTO address (addId, fullName, phoneNo, stateCity, postalCode, detailAdd, labelAs, defaultAdd, pickupAdd, returnAdd, email, available) 
+                                        VALUES ('$addId', '$fullname', '$phoneNo', '$stateCity', '$postalCode', '$detailAdd', '$labelAs', '$defaultAdd', '$pickupAdd', '$returnAdd', '$email', '1')");
         if($address_query) {
             echo "true";
         } else {
@@ -525,7 +528,7 @@ if(isset($_FILES["image"]["name"])) {
     $addId = [];
     $methodId = [];
 
-    $address = $conn->query("SELECT * FROM address WHERE email = '$email'");
+    $address = $conn->query("SELECT * FROM address WHERE email = '$email' AND available = '1'");
     if(mysqli_num_rows($address) > 0) {
         while($addDetail = $address->fetch_array()) {
             $addId[] = $addDetail['addId'];
@@ -554,7 +557,7 @@ if(isset($_FILES["image"]["name"])) {
 } elseif (isset($_POST['getAddress'])) {
     $addId = $_POST['addId'];
 
-    $address = $conn->query("SELECT * FROM address WHERE addId = '$addId'");
+    $address = $conn->query("SELECT * FROM address WHERE addId = '$addId' AND available = '1'");
     if(mysqli_num_rows($address) > 0) {
         $addDetail = mysqli_fetch_array($address);
         $addInfo = [
@@ -604,6 +607,12 @@ if(isset($_FILES["image"]["name"])) {
 
     $tracking_no = uniqid('TRACK');
     $pending_rent = $conn->query("UPDATE pending_rent SET confirmRent = '1', status = 'Pending Return' WHERE rentId = '$rentId'");
+    
+    $update = $conn->query("SELECT * FROM pending_rent WHERE rentId = '$rentId'");
+    $updateDetail = mysqli_fetch_array($update);
+    $prodId = $updateDetail['prodId'];
+    $conn->query("UPDATE products SET rentalTimes = rentalTimes - 1 WHERE prodId = '$prodId'");
+
     $payment = $conn->query("INSERT INTO payments (payment_id, payer_email, amount, currency, payment_mode, payment_status) VALUES ('$payment_id', '$email', '$totalPay', 'MYR', '$payment_mode', 'Successful')");
     $rental_detail = $conn->query("INSERT INTO rental_details (rental_id, payment_id, email, address_id, tracking_no, rental_status) VALUES ('$rentId', '$payment_id', '$email', '$addId', '$tracking_no', 'Pending Delivery')");
     $loan = $conn->query("INSERT INTO loan (loanId, rentId, email, loan_status) VALUES ('$loanId', '$rentId', '$email', 'Incomplete')");
@@ -681,6 +690,12 @@ if(isset($_FILES["image"]["name"])) {
             $payment_id = md5(time() . mt_rand(1, 1000000));
             $tracking_no = uniqid('TRACK');
             $pending_rent = $conn->query("UPDATE pending_rent SET confirmRent = '1', status = 'Pending Return' WHERE rentId = '$rentId'");
+
+            $update = $conn->query("SELECT * FROM pending_rent WHERE rentId = '$rentId'");
+            $updateDetail = mysqli_fetch_array($update);
+            $prodId = $updateDetail['prodId'];
+            $conn->query("UPDATE products SET rentalTimes = rentalTimes - 1 WHERE prodId = '$prodId'");
+
             $payment = $conn->query("INSERT INTO payments (payment_id, payer_email, amount, currency, payment_mode, payment_status) VALUES ('$payment_id', '$email', '$totalPay', 'MYR', 'Card', 'Successful')");
             $rental_detail = $conn->query("INSERT INTO rental_details (rental_id, payment_id, email, address_id, tracking_no, rental_status) VALUES ('$rentId', '$payment_id', '$email', '$addId', '$tracking_no', 'Pending Delivery')");
             $loan = $conn->query("INSERT INTO loan (loanId, rentId, email, loan_status) VALUES ('$loanId', '$rentId', '$email', 'Incomplete')");

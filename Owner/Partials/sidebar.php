@@ -63,12 +63,21 @@ function getProfilePicture($name) {
         <li>
             <div class="iocn-link">
                 <a href="main.php?view-voucher"><i class='bx bxs-discount'></i><span class="link_name">Voucher</span></a>
-                <i class='bx bxs-chevron-down arrow' ></i>
+                <!-- <i class='bx bxs-chevron-down arrow' ></i> -->
             </div>
             <ul class="sub-menu">
                 <li><a class="link_name" href="main.php?view-voucher">Voucher</a></li>
                 <!-- <li><a href="main.php?add-product">Add Rental Product</a></li>
                 <li><a href="main.php?add-sProduct">Add Selling Product </a></li> -->
+            </ul>
+        </li>
+        <li>
+            <div class="iocn-link">
+                <a href="main.php?delivery"><i class='bx bxs-truck'></i><span class="link_name">Delivery</span></a>
+                <!-- <i class='bx bxs-chevron-down arrow' ></i> -->
+            </div>
+            <ul class="sub-menu">
+                <li><a class="link_name" href="main.php?delivery">Delivery</a></li>
             </ul>
         </li>
         <li>
@@ -96,6 +105,14 @@ function getProfilePicture($name) {
             <a href="main.php?donate"><i class='bx bx-donate-heart' ></i><span class="link_name">Donation</span></a>
             <ul class="sub-menu blank">
                 <li><a class="link_name" href="main.php?donate">Donation</a></li>
+            </ul>
+        </li>
+        <li>
+            <div class="iocn-link">
+                <a href="main.php?payment"><i class='bx bx-history'></i><span class="link_name">Payment</span></a>
+            </div>
+            <ul class="sub-menu">
+                <li><a class="link_name" href="main.php?payment">Payment</a></li>
             </ul>
         </li>
         

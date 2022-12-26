@@ -12,10 +12,8 @@ function sendMail($senderEmail, $receiveEmail, $subject, $message) {
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'lacccarrental@gmail.com';                 // SMTP username
-        $mail->Password = 'hzfmqbwoqqisdbls';    
-        // $mail->Username = 'fyp.rnsservice@gmail.com';
-        // $mail->Password = 'gvwkiyvkdtlevhdc';
+        $mail->Username = 'lacccarrental@gmail.com';
+        $mail->Password = 'hzfmqbwoqqisdbls'; 
         $mail->SMTPSecure = 'tsl';
         $mail->Port = 587;
 
@@ -35,3 +33,5 @@ function sendMail($senderEmail, $receiveEmail, $subject, $message) {
     }
 }
 ?>
+
+

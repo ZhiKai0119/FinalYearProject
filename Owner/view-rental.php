@@ -2,11 +2,11 @@
 <script src="https://kit.fontawesome.com/885ec11a96.js" crossorigin="anonymous"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <?php 
-$total_pages = $conn->query('SELECT * FROM pending_rent')->num_rows;
+$total_pages = $conn->query('SELECT * FROM pending_rent ORDER BY rentId DESC')->num_rows;
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? $_GET['page'] : 1;
 $num_results_on_page = 9;
 
-if ($stmt = $conn->prepare('SELECT * FROM pending_rent LIMIT ?,?')) {
+if ($stmt = $conn->prepare('SELECT * FROM pending_rent ORDER BY rentId DESC LIMIT ?,?')) {
 	$calc_page = ($page - 1) * $num_results_on_page;
 	$stmt->bind_param('ii', $calc_page, $num_results_on_page);
 	$stmt->execute(); 

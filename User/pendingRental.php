@@ -240,9 +240,6 @@ if (isset($_COOKIE["id"]) && isset($_COOKIE["token"])) {
                         var option = document.createElement("option");
                         option.text = address[i];
                         addId.add(option, address[i]);
-                        // if(address[i] == "ADD2") {
-                        //     addId.options[address[i]].selected = 'selected';
-                        // }
                     }
                     showAddId();
 

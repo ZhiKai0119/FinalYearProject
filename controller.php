@@ -65,7 +65,7 @@ if(isset($token["error"]) != "invalid_grant") {
         $complete_save = $filename;
         
         $sql = "INSERT INTO users (fname, lname, fullName, picture, email, verifiedEmail, token, role) "
-                . "VALUES ('{$userInfo['fname']}', '{$userInfo['lname']}', '{$userInfo['fullName']}', '{$complete_save}', '{$userInfo['email']}', '{$userInfo['verifiedEmail']}', '{$userInfo['token']}', 'User')";
+                . "VALUES ('{$userInfo['fname']}', '{$userInfo['lname']}', '{$userInfo['fullName']}', '{$complete_save}', '{$userInfo['email']}', '{$userInfo['verifiedEmail']}', '{$userInfo['token']}', 'Customer')";
         $insertUser = mysqli_query($conn, $sql);
         
         if($insertUser) {

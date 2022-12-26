@@ -13,13 +13,15 @@ if (isset($_COOKIE["id"]) && isset($_COOKIE["token"])) {
     exit();
 }
 
+$conn->query("UPDATE sell_product SET available = 'Unavailable' WHERE product_qty = 0");
+
 if(isset($_GET['catId'])){
     $catId = $_GET['catId'];
-    $query = "SELECT * FROM sell_product WHERE type = '$catId'";
-    $query2 = "SELECT * FROM sell_product WHERE type = '$catId' LIMIT ?,?";
+    $query = "SELECT * FROM sell_product WHERE type = '$catId' AND available = 'Available'";
+    $query2 = "SELECT * FROM sell_product WHERE type = '$catId' AND available = 'Available' LIMIT ?,?";
 } else {
-    $query = "SELECT * FROM sell_product";
-    $query2 = "SELECT * FROM sell_product LIMIT ?,?";
+    $query = "SELECT * FROM sell_product WHERE available = 'Available'";
+    $query2 = "SELECT * FROM sell_product WHERE available = 'Available' LIMIT ?,?";
 }
 
 $total_pages = $conn->query($query)->num_rows;
@@ -134,7 +136,6 @@ if ($stmt = $conn->prepare($query2)) {
                             } else if(response == "over") {
                                 $("#message").html("<div class='alert alert-danger alert-dismissible fade show' role='alert'><strong>Failed!</strong> The quantity exceed the actual value.<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button></div>");
                             } else{
-                                alert(response);
                                 $("#message").html("<div class='alert alert-danger alert-dismissible fade show' role='alert'><strong>Failed!</strong> Item not added to your cart.<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button></div>");
                             }
                             window.scrollTo(0, 0);

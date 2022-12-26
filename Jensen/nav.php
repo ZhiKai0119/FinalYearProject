@@ -9,7 +9,7 @@ if (isset($_COOKIE["id"]) && isset($_COOKIE["token"])) {
     $fullName = $userInfo['fullName'];
     $picture = '<img class="rounded-circle" src="../Images/'. $userInfo['picture'] .'" alt="" width="25px" height="25px" style="margin-bottom: 3px;">';
     
-    $dropItem1 = '<a class="dropdown-item" href="./userProfile.php">Profile</a>';
+    $dropItem1 = '<a class="dropdown-item" href="../User/userProfile.php">Profile</a>';
     $dropItem2 = '<a class="dropdown-item" href="../logout.php">Logout</a>';
 
     $count_cart = $conn->query("SELECT * FROM cart WHERE email = '$email' AND status = 'Pending'");

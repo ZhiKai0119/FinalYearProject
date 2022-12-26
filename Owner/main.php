@@ -60,6 +60,9 @@
                 if(isset($_GET['edit-sProduct'])) {
                     include "../Jensen/admin/edit-product.php";
                 } 
+                if(isset($_GET['delivery'])) {
+                    include "../Jensen/admin/delivery.php";
+                } 
                 if(isset($_GET['view-rental'])) {
                     include "view-rental.php";
                 } 
@@ -78,6 +81,9 @@
                 if(isset($_GET['view-users'])) {
                     include "view-users.php";
                 } 
+                if(isset($_GET['payment'])) {
+                    include "view-payment.php";
+                }
                 if(isset($_GET['donate'])) {
                     include "add_donation.php";
                 } 
@@ -148,11 +154,13 @@
                                        $("#products_table").load(Location.href = "main.php?view-product" + " #products_table");
                                    } else if(response == "error") {
                                        swal("Error!", "Something Went Wrong", "error");
+                                   } else if(response == "exists") {
+                                       swal("Error!", "This product still pending return", "error");
                                    }
                                }
                             });
-                          }
-                        });
+                        }
+                    });
                 });
             });
         </script>

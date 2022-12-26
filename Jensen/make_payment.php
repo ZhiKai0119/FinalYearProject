@@ -1,6 +1,7 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 <script src="https://www.paypal.com/sdk/js?client-id=AdSkztRu2j-BUhPEP869O0jnt--TP2guml7TnkOcSeVfJ_5p1cxWKQ0Z1MoJSVPI2lnkFUvLc3Z_pWN6&currency=MYR"></script>
+<script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 <?php 
 include './config/constant.php';
 include './nav.php';
@@ -13,6 +14,13 @@ if (isset($_COOKIE["id"]) && isset($_COOKIE["token"])) {
 } else { ?>
     <script>window.open("../index.php", "_self");</script>
 <?php }
+
+$check_voucher = $conn->query("SELECT * FROM sell_voucher");
+$data = $check_voucher->fetch_assoc();
+if($data['quantity'] == 0) {
+    $delete_voucher = $conn->query("UPDATE sell_voucher SET voucher_status = 'Unavailable' WHERE redeemCode = '$redeemCode'");
+}
+
 ?>
 
 <div class="py-2">
@@ -55,12 +63,6 @@ if (isset($_COOKIE["id"]) && isset($_COOKIE["token"])) {
                             <h6 for="email" class="form-label">Email</h6>
                             <input type="email" class="form-control" id="email" name="email" placeholder="Email" value="<?php echo $email; ?>" required>
                         </div>
-                        <!-- <div class="mb-3">
-                            <h6 for="payment" class="form-label">Payment Method</h6>
-                            <select class="form-select" id="payment" name="payment" required>
-                                <option value="Cash On Delivery">Cash On Delivery</option>
-                            </select>
-                        </div> -->
                     </form>
                 </div>
                 <div class="col-md-6">
@@ -101,7 +103,7 @@ if (isset($_COOKIE["id"]) && isset($_COOKIE["token"])) {
                                 <td><?php echo $shipping ?></td>
                             </tr>
                             <tr>
-                                <td colspan="2">Voucher <button class="btn btn-secondary ml-3 float-right" onclick="openModal();">Apply Voucher</button></td>
+                                <td colspan="2">Voucher <button class="btn btn-secondary ml-3 float-right btnApply" onclick="openModal();">Apply Voucher</button></td>
                                 <td><input type="text" class="form-control-plaintext" readonly name="discount_price" id="discount_price" value="0"></td>
                             </tr>
                             <tr>
@@ -138,11 +140,11 @@ if (isset($_COOKIE["id"]) && isset($_COOKIE["token"])) {
                             <div class="row">
                                 <div class="col-md-9">
                                     <?php echo $data['title']; ?><br>
-                                    <input type="text" class="form-control-plaintext input-sm p-0" id="code" name="code" value="<?php echo $data['redeemCode']; ?>">
+                                    <input type="text" class="form-control-plaintext input-sm p-0 code" name="code" value="<?php echo $data['redeemCode']; ?>">
                                     <span class="text-danger">Minimum Spend: RM <?php echo $data['minSpend']; ?></span>
                                 </div>
                                 <div class="col-md-3 d-flex align-content-center">
-                                    <button class="btn-sm btn-success" onclick="copyText()">Redeem</button>
+                                    <button class="btn-sm btn-success btnRedeem" value="<?php echo $data['redeemCode']; ?>">Redeem</button>
                                 </div>
                             </div>
                         </li> 
@@ -157,28 +159,33 @@ if (isset($_COOKIE["id"]) && isset($_COOKIE["token"])) {
 </div>
 
 <script>
+    $(document).ready(function() {
+        $('.btnRedeem').click(function() {
+            var total = $('.total').val();
+            var code = $(this).val();
+            console.log(code);
+            console.log(total);
+            $.ajax({
+                type: "POST",
+                url: "./process/process.php",
+                data: "checkVoucher" + "&total=" + total + "&redeemCode=" + code,
+                success: function(response) {
+                    obj = JSON.parse(response);
+                    $('.total').val(obj.total);
+                    $('#discount_price').val(obj.value);
+                    if(obj.value == '0.00') {
+                        alert("Your cart haven't reach the minimum spend.");
+                    } else {
+                        $('#voucher').modal('hide');
+                        $('.btnApply').attr('disabled', 'disabled');
+                    }
+                }
+            });
+        });
+    });
+
     function openModal() {
         $('#voucher').modal('show');
-    }
-
-    function copyText() {
-        var copyText = document.getElementById("code");
-        copyText.select();
-        copyText.setSelectionRange(0, 99999);
-        navigator.clipboard.writeText(copyText.value)
-        total = $('#total').val();
-
-        $.ajax({
-            type: "POST",
-            url: "./process/process.php",
-            data: "checkVoucher" + "&total=" + total + "&redeemCode=" + copyText.value,
-            success: function(response) {
-                $('#discount_price').val("-" + response);
-                // $('#cal_discount').val(response);
-                calTotal();
-                $('#voucher').modal('hide');
-            }
-        })
     }
 
     function calTotal() {

@@ -9,9 +9,20 @@ if(isset($_POST['checkVoucher'])) {
     $data = $check_voucher->fetch_assoc();
     if($total > $data['minSpend']) {
         $value = $data['voucher_value'];
-        echo $value;
+        $discount = [
+            'value' => $value,
+            'total' => $total - $value,
+        ];
+
+        $update_voucher = $conn->query("UPDATE sell_voucher SET quantity = quantity - 1 WHERE redeemCode = '$redeemCode'");
+
+        echo json_encode($discount);
     } else {
-        echo "0.00";
+        $discount = [
+            'value' => '0.00',
+            'total' => $total,
+        ];
+        echo json_encode($discount);
     }
 } elseif(isset($_POST['makePayment'])) {
     $query = "SELECT * FROM receiver_details ORDER BY receiverId desc LIMIT 1";
@@ -45,6 +56,15 @@ if(isset($_POST['checkVoucher'])) {
     if($payment && $receiver) {
         $tracking_no = uniqid('TRACK');
         $cart = $conn->query("UPDATE cart SET status = 'Done' WHERE cartId = '$cartId'");
+
+        $query_product = $conn->query("SELECT * FROM cart WHERE cartId = '$cartId'");
+        while($product = $query_product->fetch_assoc()) {
+            $productCode = $product['prodCode'];
+            $prodQty = $product['qty'];
+            $conn->query("UPDATE sell_product SET product_qty = product_qty - $prodQty WHERE product_code = '$productCode'");
+        }
+        
+
         $order_details = $conn->query("INSERT INTO order_details (cartId, payment_id, email, receiver_id, tracking_no, status) VALUES ('$cartId', '$payment_id', '$email', '$receiverId', '$tracking_no', 'Pending Delivery')");
         if($cart && $order_details) {
             echo "success";

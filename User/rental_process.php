@@ -1,84 +1,9 @@
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> -->
+<link rel="stylesheet" href="../CSS/bootstrap-5.0.2/dist/css/bootstrap.min.css">  
+<link rel="stylesheet" href="../CSS/bootstrap-5.0.2/dist/js/bootstrap.bundle.min.js">  
 <script src="https://www.paypal.com/sdk/js?client-id=AdSkztRu2j-BUhPEP869O0jnt--TP2guml7TnkOcSeVfJ_5p1cxWKQ0Z1MoJSVPI2lnkFUvLc3Z_pWN6&currency=MYR"></script>
 <!-- <a class="btn btn-primary m-3" data-bs-toggle="modal" href="#exampleModalToggle" role="button">Proceed</a> -->
-
-<!-- <div class="modal fade" id="rentalProcess" data-bs-backdrop="static" aria-hidden="true" aria-labelledby="rentalProcessLabel" tabindex="-1">
-  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header bg-primary">
-        <h5 class="modal-title" id="rentalProcessLabel">Item Details</h5>
-        <button type="button" class="btn-close" aria-label="Close"></button>
-      </div>
-
-      <div class="modal-body">
-        <div class="row">
-          <div class="col-md-4">
-            <img alt="Image" class="img-fluid" id="prodImg">
-          </div>
-          <div class="col-md-8">
-            <div class="form-group row">
-              <input type="hidden" class="form-control-plaintext ml-3" id="email" name="email">
-              <h6 class="col-4 col-form-label">Rental ID:</h6>
-              <div class="col-sm">
-                <input type="text" readonly class="form-control-plaintext" id="rentId" name="rentId">
-              </div>
-            </div>
-            <div class="form-group row">
-              <h6 class="col-4 col-form-label">Product ID:</h6>
-              <div class="col-sm">
-                <input type="text" readonly class="form-control-plaintext" id="prodId" name="prodId">
-              </div>
-            </div>
-            <div class="form-group row">
-              <h6 class="col-4 col-form-label">Date Range:</h6>
-              <div class="col-sm input-group">
-                <input type="text" class="input-sm form-control" id="startDate" name="startDate">
-                <span class="input-group-text" id="addon-wrapping">TO</span>
-                <input type="text" class="input-sm form-control" id="endDate" name="endDate">
-              </div>
-            </div>
-            <div class="form-group row">
-                <h6 class="col-4 col-form-label">Rental Fees (RM):</h6>
-                <div class="col-sm">
-                  <input type="text" readonly class="form-control-plaintext" id="rentFees" name="rentFees" value="0.00">
-                </div>
-            </div>
-            <div class="form-group row">
-                <h6 class="col-4 col-form-label">Rental Deposit (RM):</h6>
-                <div class="col-sm">
-                    <input type="text" readonly class="form-control-plaintext" id="deposit" name="deposit" value="0.00">
-                </div>
-            </div>
-            <div class="form-group row">
-                <h6 class="col-4 col-form-label">Sub-Total Fees (RM):</h6>
-                <div class="col-sm">
-                    <input type="text" readonly class="form-control-plaintext" id="sTotal" name="sTotal" value="0.00">
-                </div>
-            </div>
-
-            <div class="form-group row">
-                <h6 class="col-4 col-form-label">Delivery Fees (RM):</h6>
-                <div class="col-sm">
-                    <input type="text" readonly class="form-control-plaintext" id="delFees" name="delFees" value="5.60">
-                </div>
-            </div>
-            <div class="form-group row">
-                <h6 class="col-4 col-form-label">Total Payment (RM):</h6>
-                <div class="col-sm">
-                    <input type="text" readonly class="form-control-plaintext text-success font-weight-bold" id="totalPay" name="totalPay" value="0.00">
-                </div>
-            </div>
-          </div>
-        </div>
-        
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-primary m-1" data-bs-target="#deliveryAdd" data-bs-toggle="modal" data-bs-dismiss="modal">Next</button>
-      </div>
-    </div>
-  </div>
-</div> -->
 
 <div class="modal fade" id="deliveryAdd" data-bs-backdrop="static" aria-hidden="true" aria-labelledby="deliveryAddlabel" tabindex="-1">
   <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">

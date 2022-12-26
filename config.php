@@ -6,13 +6,11 @@ $gClient = new Google_Client();
 $gClient->setClientId("64874558551-bong1m216ibjfsuaqsdi8sko5mp8t0aq.apps.googleusercontent.com");
 $gClient->setClientSecret("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");
 $gClient->setApplicationName("R&S Login");
-// http://localhost/FinalYearProject/User/main.php
 $gClient->setRedirectUri("http://localhost/FinalYearProject/controller.php");
 $gClient->addScope("https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email");
 
 $login_url = $gClient->createAuthUrl();
 
-//Connect to database
 $hostname = "localhost";
 $username = "root";
 $password = "";

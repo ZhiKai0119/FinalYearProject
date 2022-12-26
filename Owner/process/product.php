@@ -84,23 +84,27 @@ if(isset($_POST['add_product_btn'])) {
     } else {
         errorRedirect("../main.php?edit-product&id=$product_id", "Something Went Wrong");
     }
-} 
-else if(isset($_POST['delete_product_btn'])) {
-    $product_id = mysqli_real_escape_string($conn, $_POST['product_id']);    
-    $delete_query = $conn->query("UPDATE products SET Activated = '0' WHERE prodId='$product_id'");
-    if($delete_query) {
-        echo "success";
+} else if(isset($_POST['delete_product_btn'])) {
+    $product_id = mysqli_real_escape_string($conn, $_POST['product_id']);  
+    
+    $check_exists = $conn->query("SELECT * FROM pending_rent WHERE prodId='$product_id' AND status='Pending Return'");
+    if($check_exists->num_rows > 0) {
+        echo "exists";
     } else {
-        echo "error";
+        $delete_query = $conn->query("UPDATE products SET Activated = '0' WHERE prodId='$product_id'");
+        if($delete_query) {
+            echo "success";
+        } else {
+            echo "error";
+        }
     }
-}
-else if(isset($_POST['create_donation_btn'])) {
+} else if(isset($_POST['create_donation_btn'])) {
     $query = "SELECT * FROM donation ORDER BY donationId desc limit 1";
     $result = mysqli_query($conn, $query);
     $row = mysqli_fetch_array($result);
     $lastId = $row['donationId'];
     if($lastId == "") {
-        $donationId = "DON1";
+        $donationId = "DON8001";
     } else {
         $donationId = substr($lastId, 3);
         $donationId = intval($donationId);
@@ -113,7 +117,7 @@ else if(isset($_POST['create_donation_btn'])) {
     $check_product = "SELECT * FROM donation WHERE prodId='$product_id' LIMIT 1";
     $prod_result = mysqli_query($conn, $check_product);
     if(mysqli_num_rows($prod_result) > 0) {
-        $data = mysqli_fetch_array($donation);
+        $data = mysqli_fetch_array($prod_result);
         $donationId = $data['donationId'];
         header("Location: ../main.php?edit-donation&id=$product_id");
     } else {
@@ -124,11 +128,9 @@ else if(isset($_POST['create_donation_btn'])) {
             errorRedirect("../main.php?add_donation", "Something Went Wrong");
         }
     }
-}
-else if(isset ($_POST['update_donation_btn'])) {
+} else if(isset ($_POST['update_donation_btn'])) {
     $donation_id = $_POST['donation_id'];
     $prodId = $_POST['product_id'];
-//    $name = $_POST['name'];
     $location_name = $_POST['location_name'];
     $location_address = $_POST['location_address'];
     
@@ -143,8 +145,27 @@ else if(isset ($_POST['update_donation_btn'])) {
     } else {
         errorRedirect("../main.php?edit-donation&id=$product_id", "Something Went Wrong");
     }
-}
-else {
+} else if(isset($_POST['updateRentTimes'])) {
+    $prodId = $_POST['prodId'];
+
+    $check = $conn->query("SELECT * FROM donation WHERE prodId='$prodId'");
+    if($check->num_rows > 0) {
+        $update = $conn->query("DELETE FROM donation WHERE prodId='$prodId'");
+        $update = $conn->query("UPDATE products SET rentalTimes=rentalTimes+50 WHERE prodId='$prodId'");
+        if($update) {
+            echo "success";
+        } else {
+            echo "error";
+        }
+    } else {
+        $update = $conn->query("UPDATE products SET rentalTimes=rentalTimes+50 WHERE prodId='$prodId'");
+        if($update) {
+            echo "success";
+        } else {
+            echo "error";
+        }
+    }
+} else {
     header("Location: ../main.php");
 }
 ?>

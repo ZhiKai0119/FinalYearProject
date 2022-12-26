@@ -43,11 +43,11 @@
                                 <input type="text" name="product_price" placeholder="Enter Product Price" class="form-control mb-2">
                             </div>
                             <div class="col-md-4">
-                                <label class="mb-0">Original Price</label>
+                                <label class="mb-0">Original Rental Price</label>
                                 <input type="text" name="original_price" placeholder="Enter Original Price" class="form-control mb-2">
                             </div>
                             <div class="col-md-4">
-                                <label class="mb-0">Rental Price</label>
+                                <label class="mb-0">Actual Rental Price</label>
                                 <input type="text" name="rental_price" placeholder="Enter Rental Price" class="form-control mb-2">
                             </div>
                             <div class="col-md-12">

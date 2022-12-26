@@ -1,5 +1,7 @@
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">        
+<!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">         -->
+<link rel="stylesheet" href="./CSS/bootstrap-5.0.2/dist/css/bootstrap.min.css">
+<script src="./CSS/bootstrap-5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
@@ -66,7 +68,6 @@
             margin-right: 50% !important;
         } */
     </style>
-<!--    </head>-->
 
 <body class="bg-secondary">
     <div class="container-fluid mt-3">
@@ -76,7 +77,6 @@
                 <nav aria-label="breadcrumb" class="mb-3">
                   <ol class="breadcrumb bg-dark">
                     <li class="breadcrumb-item"><a href="main.php">Home</a></li>
-<!--                        <li class="breadcrumb-item"><a href="#">User</a></li>-->
                     <li class="breadcrumb-item active" aria-current="page">Profile Setting</li>
                   </ol>
                 </nav>
@@ -90,7 +90,7 @@
                                     <a data-toggle='tab' class="nav-link" href="#account"><i class="fas fa-user-cog mr-1"></i> Account Setting</a>
                                     <a data-toggle='tab' class="nav-link" href="#security"><i class="fas fa-user-shield mr-1"></i> Security</a>
                                     <a data-toggle='tab' class="nav-link" href="#address"><i class="fas fa-map mr-1"></i> Address</a>
-                                    <a data-toggle='tab' class="nav-link" href="#notification"><i class="fas fa-bell mr-1"></i> Notification</a>
+                                    <!-- <a data-toggle='tab' class="nav-link" href="#notification"><i class="fas fa-bell mr-1"></i> Notification</a> -->
                                     <a data-toggle='tab' class="nav-link" href="#billing"><i class="fas fa-money-check-alt mr-1"></i> Billing</a>
                                     <a data-toggle='tab' class="nav-link" href="#tracking"><i class="fas fa-route mr-1"></i> Tracking</a>
                                 </nav>
@@ -115,9 +115,9 @@
                                     <li class="nav-item">
                                         <a data-toggle='tab' class="nav-link" href="#address"><i class="fas fa-map mr-1"></i></a>
                                     </li>
-                                    <li class="nav-item">
+                                    <!-- <li class="nav-item">
                                         <a data-toggle='tab' class="nav-link" href="#notification"><i class="fas fa-bell mr-1"></i></a>
-                                    </li>
+                                    </li> -->
                                     <li class="nav-item">
                                         <a data-toggle='tab' class="nav-link" href="#billing"><i class="fas fa-money-check-alt mr-1"></i></a>
                                     </li>
@@ -210,7 +210,7 @@
                                         <button class="btn btn-success" type="button" name="updatePwd" id="changePwd">Change</button>
                                     </form>
                                     <hr>
-                                    <form>
+                                    <!-- <form>
                                         <div class="form-group">
                                             <label class="d-block mb-2">Two Factor Authentication</label>
                                             <button class="btn btn-outline-info" type="submit">Enable two-factor authentication</button>
@@ -232,11 +232,11 @@
                                                 </li>
                                             </ul>
                                         </div>
-                                    </form>
+                                    </form> -->
                                 </div>
 
                                 <!--notification data-->
-                                <div class="tab-pane" id="notification">
+                                <!-- <div class="tab-pane" id="notification">
                                     <h6>NOTIFICATION SETTINGS</h6>
                                     <hr>
                                     <form>
@@ -294,7 +294,7 @@
                                             </ul>
                                         </div>
                                     </form>
-                                </div>
+                                </div> -->
 
                                 <!--billing data-->
                                 <div class="tab-pane" id="billing">
@@ -336,8 +336,16 @@
                                                     <ul class="list-group">
                                                         <?php while($result = $pay_record->fetch_assoc()): 
                                                             $payment_id = $result['payment_id'];
-                                                            $find_prod = $conn->query("SELECT * FROM rental_details rd, payments p WHERE rd.payment_id = p.payment_id AND p.payment_id = '$payment_id'"); 
-                                                            $rentInfo = $find_prod->fetch_assoc(); ?>
+                                                            $find_prod = $conn->query("SELECT * FROM rental_details rd, payments p WHERE rd.payment_id = p.payment_id AND p.payment_id = '$payment_id'");
+                                                            if($find_prod->num_rows > 0) {
+                                                                $rentInfo = $find_prod->fetch_assoc(); 
+                                                                $id = "<b>Rental ID: </b>" . $rentInfo['rental_id'];
+                                                            } else {
+                                                                $find_order = $conn->query("SELECT * FROM order_details o, payments p WHERE o.payment_id = p.payment_id AND p.payment_id = '$payment_id'");
+                                                                $orderInfo = $find_order->fetch_assoc();
+                                                                $id = "<b>Cart ID: </b>" . $orderInfo['cartId'];
+                                                            }
+                                                            ?>
                                                         <li class="list-group-item">
                                                             <div class="row">
                                                                 <div class="col-md-1">
@@ -348,7 +356,7 @@
                                                                     <h6><b>Amount Paid: </b>RM<?php echo $result['amount']; ?></h6>
                                                                 </div>
                                                                 <div class="col-lg-4">
-                                                                    <h6><b>Rental ID: </b><?php echo $rentInfo['rental_id']; ?></h6>
+                                                                    <h6><?php echo $id; ?></h6>
                                                                 </div>
                                                             </div>
                                                         </li>
@@ -747,6 +755,10 @@
             defaultAdd = $("#defaultAdd:Checked").val();
             pickupAdd = $("#pickupAdd:Checked").val();
             returnAdd = $("#returnAdd:Checked").val();
+
+            // console.log(fullname);
+            // console.log(phoneNo);
+            // console.log(stateCity);
             
             $.ajax({
                 type: "POST",
@@ -878,8 +890,8 @@
     });
     //FIXME: Notification
     </script>
-    
+    <script src="./CSS/bootstrap-5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script> -->
     <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>

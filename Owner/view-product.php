@@ -1,10 +1,10 @@
 <link rel="stylesheet" href="CSS/pagination.css">
 <?php 
-$total_pages = $conn->query('SELECT * FROM products')->num_rows;
+$total_pages = $conn->query("SELECT * FROM products WHERE Activated = '1'")->num_rows;
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? $_GET['page'] : 1;
 $num_results_on_page = 10;
 
-if ($stmt = $conn->prepare('SELECT * FROM products LIMIT ?,?')) {
+if ($stmt = $conn->prepare("SELECT * FROM products WHERE Activated = '1' LIMIT ?,?")) {
 	$calc_page = ($page - 1) * $num_results_on_page;
 	$stmt->bind_param('ii', $calc_page, $num_results_on_page);
 	$stmt->execute(); 
@@ -43,7 +43,7 @@ if ($stmt = $conn->prepare('SELECT * FROM products LIMIT ?,?')) {
                             </thead>
                             <tbody>
                                 <?php
-                                    $product = $conn->query("SELECT * FROM products");
+                                    $product = $conn->query("SELECT * FROM products WHERE Activated = '1'");
                                     if(mysqli_num_rows($product) > 0) {
                                         foreach ($product as $item) {?>
                                             <tr>
